@@ -6,7 +6,6 @@
 #include <stdlib.h>
 extern int yylineno;
 extern int yylex();
-extern FILE *yyin;
 
 int Index = 0; 
 char mID[20];
@@ -31,7 +30,7 @@ symbol_table *lookup_symbol(char const *);
 void create_symbol();
 void insert_symbol();
 void dump_symbol();
-void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
+void yyerror(char const *s) { fprintf(stderr, "%s\n", s); }
 
 symbol_table *Table, *Head;
 
@@ -51,8 +50,7 @@ symbol_table *Table, *Head;
 %token IF ELSE FOR
 %token VAR NEWLINE
 %token INT FLOAT VOID
-%token INCREMENT DECREMENT 
-%token Other
+%token INCREMENT DECREMENT
 
 /* Token with return, which need to sepcify type */
 %token <i_val> I_CONST 
@@ -63,7 +61,6 @@ symbol_table *Table, *Head;
 /* Nonterminal with return, which need to sepcify type */
 %type <f_val> stat 
 %type <i_val> CALC
-%type <i_val> INCDRC
 
 /* Yacc will start at this nonterminal */
 %start program
@@ -77,33 +74,33 @@ symbol_table *Table, *Head;
 %%
 
 program 
-	: stat program 
-	| 
+    : stat program 
+    | 
 ;
 
 stat
-    : declaration { /* puts("0"); */ }
-    | compound_stat { /* puts("1"); */ }
-    | expression_stat { /* puts("2"); */ }
-    | print_func { /* puts("3"); */ }
-    | trap { /* puts (" trap from stat " ); */ }
+    : declaration
+    | compound_stat
+    | expression_stat
+    | print_func
 ;
 
-compound_stat 
-	:
+compound_stat :
 ;
 
 print_func 
-	: PRINT '(' stat ')' { printf("Print : %d\n", lookup_symbol(mID)->I_data); }
-	| PRINTLN '(' I_STORE_ID ')' { printf("Println : %s\n", mID); }
-	| PRINT '(' I_STORE_STRING ')' { printf("Print : %s\n", mString); }
-	| PRINTLN '(' I_STORE_STRING ')' { printf("Println %s\n", mString); }
+	: PRINT '(' I_STORE_ID ')' { printf("%s\n", mID); }
+	| PRINTLN '(' I_STORE_ID ')' { printf("%s\n\n", mID); }
+	| PRINT '(' I_STORE_STRING ')' { printf("%s\n", mString); }
+	| PRINTLN '(' I_STORE_STRING ')' { printf("%s\n", mString); }
+	| NEWLINE
 ;
 
 
 declaration
-    	: VAR I_STORE_ID type '=' CALC { I_data = $5; create_symbol(); }
-    	| VAR I_STORE_ID type { create_symbol(); }
+    : VAR I_STORE_ID type '=' initializer { create_symbol(); }
+    | VAR I_STORE_ID type { create_symbol(); }
+    | NEWLINE
 ;
 
 type
@@ -120,59 +117,37 @@ I_STORE_STRING
 	: STRING { strcpy(mString, $1); }
 ;
 
+initializer 
+	: ID
+	| constant 
+;
+
 expression_stat 
 	: IF_ELSE
-	| FOR '{' stat '}' 
-	| CALC
-	| I_STORE_ID '=' CALC
-	{
-		puts("Assign");
-		if(!lookup_symbol(mID)) 
-		{
-			printf("%s --> Undeclared Variable\n", mID);
-		}
-		else
-		{
-			lookup_symbol(mID)->I_data = $3;
-		}
-	}
-	| INCDRC { lookup_symbol(mID) -> I_data = $1; }
+	| FOR '{' expression_stat '}' 
+	| CALC { printf("Ans = %d\n", $1);}
 ;
 
-INCDRC	: INCDRC INCREMENT { $$ = $$ + 1;}
-	| INCDRC DECREMENT { $$ = $$ - 1;}
-	| I_STORE_ID
-	{
-		if(!lookup_symbol(mID))
-		{
-			printf("%s --> Undeclared Variable\n", mID);
-		}
-
-		else
-		{
-			$$ = lookup_symbol(mID)->I_data;
-		}
-	}
-;
-
-
-CALC 	: CALC '+' CALC { $$ = $1 + $3; puts("Add");}
-	| CALC '-' CALC { $$ = $1 - $3; puts("Sub");}
-	| CALC '*' CALC { $$ = $1 * $3; puts("Mul");}
-	| CALC '/' CALC { $$ = $1 / $3; puts("Div");}
-	| '(' CALC ')'	{ $$ = $2; }
-	| I_STORE_ID
+CALC 	: CALC '+' CALC { $$ = $1 + $3;}
+	| CALC '-' CALC { $$ = $1 - $3;}
+	| CALC '*' CALC { $$ = $1 * $3;}
+	| CALC '/' CALC { $$ = $1 / $3;}
+	| '(' CALC ')'	{ $$ = $2 ;}
+	| ID 
 	{ 
-		if(!lookup_symbol(mID))
+		if(!lookup_symbol($1))
 		{ 
-			printf("%s -->  Undeclared Varaible\n", mID); $$ = 1; 
+			printf("%s -->  Undeclared Varaible\n", $1); $$ = 1; 
 		}
 		else
 		{
-			$$ = lookup_symbol(mID)->I_data;
-		}
+			$$ = lookup_symbol($1)->I_data;
+		}	
 	}
-	| constant { $$ = I_data; }
+	| constant
+	| NEWLINE
+	| CALC INCREMENT { $$ = $$ + 1; }
+	| CALC DECREMENT { $$ = $$ - 1; }
 ;
 
 IF_ELSE : IF '{' expression_stat '}'
@@ -181,12 +156,8 @@ IF_ELSE : IF '{' expression_stat '}'
 
 
 constant
-    	: I_CONST { I_data = $1; }
-   	| F_CONST { F_data = $1; }
-;
-
-trap 	: NEWLINE { /* puts("NEWLINE"); */ }
-	| Other { /* puts("Other"); */ }
+    : I_CONST { I_data = $1; }
+    | F_CONST { F_data = $1; }
 ;
 
 %%
@@ -194,18 +165,11 @@ trap 	: NEWLINE { /* puts("NEWLINE"); */ }
 /* C code section */
 int main(int argc, char** argv)
 {
-	yyin = fopen(argv[1], "r");	
+    yylineno = 0;
 
-	yylineno = 0;
-	
-	yyparse();
-	
-	printf("\nTotal line : %d\n", yylineno);
+    yyparse();
 
-	printf("\nThe symbol table:\n");
-	dump_symbol();
-	
-	return 0;
+    return 0;
 }
 
 void create_symbol() 
@@ -242,6 +206,8 @@ void insert_symbol()
 
 	// Table point to next;
 	Table = Table -> next;
+
+	dump_symbol();
 }
 
 symbol_table *lookup_symbol(char const *Look_ID)
@@ -268,13 +234,10 @@ void dump_symbol()
 
         symbol_table *temp = Head;
 
-	puts("\nID\tType\tData");
-
         while(temp -> next != NULL)
         {
-		
-                fprintf(stdout, "%s\t%s\t%d\n", temp->mID, temp->mType, temp->I_data);
+                fprintf(stdout, "Index : %d, ID : %s, Type : %s, Data : %d\n", temp->Index, temp->mID, temp->mType, temp->I_data);
 		temp = temp -> next;
         }
-	
+
 }
