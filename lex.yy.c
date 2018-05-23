@@ -886,12 +886,12 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 33 "compiler_hw2.l"
-{ return *yytext; }
+{ return INCREMENT; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 34 "compiler_hw2.l"
-{ return *yytext; }
+{ return DECREMENT; }
 	YY_BREAK
 /* Relational */
 case 7:

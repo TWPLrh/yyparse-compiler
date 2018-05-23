@@ -30,8 +30,8 @@ id			{letter}+({letter}|{digit})*
 "-"   { return *yytext; }
 "*"   { return *yytext; }
 "/"   { return *yytext; }
-"++"  { return *yytext; }
-"--"  { return *yytext; }
+"++"  { return INCREMENT; }
+"--"  { return DECREMENT; }
 
  /* Relational */
 ">"		{ return *yytext; }

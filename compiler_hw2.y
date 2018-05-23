@@ -15,6 +15,7 @@ char mType[8];
 int I_data;
 float F_data;
 char mStr[87];
+int isthisaID = 0;
 
 typedef struct symbol_table
 {
@@ -64,6 +65,7 @@ symbol_table *Table, *Head, *gbTmp;
 
 /* Nonterminal with return, which need to sepcify type */
 %type <f_val> CALC
+%type <f_val> expr
 
 /* Yacc will start at this nonterminal */
 %start program
@@ -97,7 +99,7 @@ comp	:
 ;
 
 expr	
-	:	CALC {}
+	:	CALC
 	|	lockedID '=' CALC 
 	{
 		puts("ASSIGN");
@@ -110,12 +112,13 @@ expr
 				gbTmp->I_data = (int)$3;
 			else if(gbTmp->mType[0] == 'f')
 				gbTmp->F_data = $3;
+		$$ = $3;
 	}
 ;
 
 print_func 
-	: PRINT '(' STORE_ID ')' 	{ printf("Print : %d\n", lookup_symbol(mID)->I_data); }
-	| PRINTLN '(' STORE_ID ')' 	{ printf("Println : %s\n", mID); }
+	: PRINT '(' expr ')' 	{ printf("Print : %g\n", $3); }
+	| PRINTLN '(' expr ')' 	{ printf("Println : %g\n", $3); }
 	| PRINT '(' STORE_STR ')' 	{ printf("Print : %s\n", mStr); }
 	| PRINTLN '(' STORE_STR ')'	{ printf("Println %s\n", mStr); }
 ;
@@ -132,8 +135,8 @@ CALC
 	| CALC '*' CALC	{ $$ = $1 * $3; puts("Mul");}
 	| CALC '/' CALC	{ $$ = $1 / $3; puts("Div");}
 	| '(' CALC ')'	{ $$ = $2; }
-	| CALC '++' { $$ = $1 + 1; puts("Incr");}
-	| CALC '--' { $$ = $1 - 1; puts("Decr");}
+	| CALC INCREMENT { lookup_symbol(mID)->I_data++; $$ = $1 + 1; puts("Incr");}
+	| CALC DECREMENT { lookup_symbol(mID)->I_data--; $$ = $1 - 1; puts("Decr");}
 	| STORE_ID  
 	{
 		gbTmp = lookup_symbol(mID);
@@ -271,6 +274,5 @@ void dump_symbol()
 				fflush(stdout);
 			}
 			temp = temp -> next;
-        }
-	
+        }	
 }

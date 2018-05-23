@@ -1,6 +1,5 @@
 var a int
 var b int = 5
-var c float32 = 7.7
-a = c * 20
+a = 17
 b = a / (5 + 5)
-print(b)
+print(a = 17 + 8++)
