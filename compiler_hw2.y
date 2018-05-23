@@ -10,10 +10,11 @@ extern FILE *yyin;
 
 int Index = 0; 
 char mID[20];
+char lockedID[20];
 char mType[8];
 int I_data;
 float F_data;
-char mString[87];
+char mStr[87];
 
 typedef struct symbol_table
 {
@@ -33,15 +34,15 @@ void insert_symbol();
 void dump_symbol();
 void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
 
-symbol_table *Table, *Head;
+symbol_table *Table, *Head, *gbTmp;
 
 %}
 
 /* Using union to define nonterminal and token type */
 %union {
-    int i_val;
-    double f_val;
-    char* string;
+	int i_val;
+	double f_val;
+	char* string;
 }
 
 /* OTHERS PLEASE RETURN *YYTEXT */
@@ -52,6 +53,7 @@ symbol_table *Table, *Head;
 %token VAR NEWLINE
 %token INT FLOAT VOID
 %token INCREMENT DECREMENT 
+%token GRE LSE EQU NEQ;
 %token Other
 
 /* Token with return, which need to sepcify type */
@@ -61,9 +63,7 @@ symbol_table *Table, *Head;
 %token <string> ID
 
 /* Nonterminal with return, which need to sepcify type */
-%type <f_val> stat 
-%type <i_val> CALC
-%type <i_val> INCDRC
+%type <f_val> CALC
 
 /* Yacc will start at this nonterminal */
 %start program
@@ -77,116 +77,104 @@ symbol_table *Table, *Head;
 %%
 
 program 
-	: stat program 
+	: stmt program 
 	| 
 ;
 
-stat
-    : declaration { /* puts("0"); */ }
-    | compound_stat { /* puts("1"); */ }
-    | expression_stat { /* puts("2"); */ }
-    | print_func { /* puts("3"); */ }
-    | trap { /* puts (" trap from stat " ); */ }
+stmt
+	: dcl 		
+	| comp 		
+	| expr
+	| print_func
+	| trap 		
 ;
 
-compound_stat 
-	:
+dcl	: VAR STORE_ID type '=' CALC	{ create_symbol(); }
+	| VAR STORE_ID type		{ create_symbol(); }
+;
+
+comp	:
+;
+
+expr	
+	:	CALC {}
+	|	lockedID '=' CALC 
+	{
+		puts("ASSIGN");
+
+		gbTmp = lookup_symbol(lockedID);
+		if(!gbTmp)
+			printf("Undeclared Variable --> %s\n", lockedID);
+		else
+			if(gbTmp->mType[0] == 'i')
+				gbTmp->I_data = (int)$3;
+			else if(gbTmp->mType[0] == 'f')
+				gbTmp->F_data = $3;
+	}
 ;
 
 print_func 
-	: PRINT '(' stat ')' { printf("Print : %d\n", lookup_symbol(mID)->I_data); }
-	| PRINTLN '(' I_STORE_ID ')' { printf("Println : %s\n", mID); }
-	| PRINT '(' I_STORE_STRING ')' { printf("Print : %s\n", mString); }
-	| PRINTLN '(' I_STORE_STRING ')' { printf("Println %s\n", mString); }
-;
-
-
-declaration
-    	: VAR I_STORE_ID type '=' CALC { I_data = $5; create_symbol(); }
-    	| VAR I_STORE_ID type { create_symbol(); }
+	: PRINT '(' STORE_ID ')' 	{ printf("Print : %d\n", lookup_symbol(mID)->I_data); }
+	| PRINTLN '(' STORE_ID ')' 	{ printf("Println : %s\n", mID); }
+	| PRINT '(' STORE_STR ')' 	{ printf("Print : %s\n", mStr); }
+	| PRINTLN '(' STORE_STR ')'	{ printf("Println %s\n", mStr); }
 ;
 
 type
-    : INT 	{ strcpy(mType, "int"); }
-    | FLOAT 	{ strcpy(mType, "float32"); }
-    | VOID 	{ strcpy(mType, "void"); }
+	: INT 		{ strcpy(mType, "int"); }
+	| FLOAT 	{ strcpy(mType, "float32"); }
+	| VOID 		{ strcpy(mType, "void"); }
 ;
 
-I_STORE_ID
-	: ID { strcpy(mID, $1); } 
-;
-
-I_STORE_STRING
-	: STRING { strcpy(mString, $1); }
-;
-
-expression_stat 
-	: IF_ELSE
-	| FOR '{' stat '}' 
-	| CALC
-	| I_STORE_ID '=' CALC
-	{
-		puts("Assign");
-		if(!lookup_symbol(mID)) 
-		{
-			printf("%s --> Undeclared Variable\n", mID);
-		}
-		else
-		{
-			lookup_symbol(mID)->I_data = $3;
-		}
-	}
-	| INCDRC { lookup_symbol(mID) -> I_data = $1; }
-;
-
-INCDRC	: INCDRC INCREMENT { $$ = $$ + 1;}
-	| INCDRC DECREMENT { $$ = $$ - 1;}
-	| I_STORE_ID
-	{
-		if(!lookup_symbol(mID))
-		{
-			printf("%s --> Undeclared Variable\n", mID);
-		}
-
-		else
-		{
-			$$ = lookup_symbol(mID)->I_data;
-		}
-	}
-;
-
-
-CALC 	: CALC '+' CALC { $$ = $1 + $3; puts("Add");}
-	| CALC '-' CALC { $$ = $1 - $3; puts("Sub");}
-	| CALC '*' CALC { $$ = $1 * $3; puts("Mul");}
-	| CALC '/' CALC { $$ = $1 / $3; puts("Div");}
+CALC	
+	: CALC '+' CALC	{ $$ = $1 + $3; puts("Add");}
+	| CALC '-' CALC	{ $$ = $1 - $3; puts("Sub");}
+	| CALC '*' CALC	{ $$ = $1 * $3; puts("Mul");}
+	| CALC '/' CALC	{ $$ = $1 / $3; puts("Div");}
 	| '(' CALC ')'	{ $$ = $2; }
-	| I_STORE_ID
-	{ 
-		if(!lookup_symbol(mID))
-		{ 
-			printf("%s -->  Undeclared Varaible\n", mID); $$ = 1; 
+	| CALC '++' { $$ = $1 + 1; puts("Incr");}
+	| CALC '--' { $$ = $1 - 1; puts("Decr");}
+	| STORE_ID  
+	{
+		gbTmp = lookup_symbol(mID);
+		
+		if(!gbTmp) 
+		{
+			printf("Undeclared Variable --> %s\n", mID);
 		}
 		else
 		{
-			$$ = lookup_symbol(mID)->I_data;
+			if(gbTmp->mType[0] == 'i')
+			{
+				$$ = (float)gbTmp->I_data;
+			}
+			else if(gbTmp->mType[0] == 'f')
+			{
+				$$ = gbTmp->F_data;
+			}
 		}
 	}
-	| constant { $$ = I_data; }
+	| STORE_INT { $$ = (float)I_data; }
+	| STORE_FLT { $$ = F_data; }
 ;
 
-IF_ELSE : IF '{' expression_stat '}'
-	| IF '{' expression_stat '}' ELSE '{' expression_stat '}'
-;
+lockedID 
+	: ID		{ char *p = strtok($1, "+-*/()= \t"); strcpy(lockedID, p);};
 
+STORE_ID
+	: ID		{ char *p = strtok($1, "+-*/()= \t"); strcpy(mID, p);/*strcpy(mID, $1);*/};
 
-constant
-    	: I_CONST { I_data = $1; }
-   	| F_CONST { F_data = $1; }
-;
+STORE_STR
+	: STRING	{ strcpy(mStr, $1); };
 
-trap 	: NEWLINE { /* puts("NEWLINE"); */ }
-	| Other { /* puts("Other"); */ }
+STORE_INT
+	: I_CONST	{ I_data = $1; };
+
+STORE_FLT
+	: F_CONST	{ F_data = $1; };
+
+trap 	: NEWLINE 	{ /* puts("NEWLINE"); */ }
+	| Other 	{ /* puts("Other"); */ }
 ;
 
 %%
@@ -272,9 +260,17 @@ void dump_symbol()
 
         while(temp -> next != NULL)
         {
-		
+			if(temp->mType[0] == 'i')
+			{
                 fprintf(stdout, "%s\t%s\t%d\n", temp->mID, temp->mType, temp->I_data);
-		temp = temp -> next;
+				fflush(stdout);
+			}
+			else if(temp -> mType[0] == 'f')
+			{
+				fprintf(stdout, "%s\t%s\t%g\n", temp->mID, temp->mType, temp->F_data);
+				fflush(stdout);
+			}
+			temp = temp -> next;
         }
 	
 }
