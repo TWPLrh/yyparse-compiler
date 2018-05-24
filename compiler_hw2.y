@@ -149,6 +149,12 @@ CALC
 	| STORE_ID  { $$ = $1 ;}
 	| STORE_INT { $$ = (float)I_data; }
 	| STORE_FLT { $$ = F_data; }
+	| CALC '>' CALC { $$ = $1 > $3; puts("Greater");}
+	| CALC '<' CALC	{ $$ = $1 < $3; puts("Lesser");}
+	| CALC EQU CALC	{ $$ = $1 == $3; puts("Equal");}
+	| CALC GRE CALC	{ $$ = $1 >= $3; puts("Greater or Equal");}
+	| CALC LSE CALC	{ $$ = $1 <= $3; puts("Lesser or Equal");}
+	| CALC NEQ CALC	{ $$ = $1 != $3; puts("Not Equal");}
 ;
 
 lockedID 
@@ -157,7 +163,7 @@ lockedID
 STORE_ID
 	: ID		
 	{ 
-		char *p = strtok($1, "+-*/()=% \t");
+		char *p = strtok($1, "+-*/()=%>< \t");
 		strcpy(mID, p); 
 
 		gbTmp = lookup_symbol(mID);
