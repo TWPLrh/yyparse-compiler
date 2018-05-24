@@ -36,6 +36,7 @@ symbol_table *lookup_symbol(char const *);
 void create_symbol();
 void insert_symbol();
 void dump_symbol();
+float Func_Assign(char, float);
 void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
 
 symbol_table *Table, *Head, *gbTmp;
@@ -57,6 +58,7 @@ symbol_table *Table, *Head, *gbTmp;
 %token VAR NEWLINE
 %token INT FLOAT VOID
 %token INCREMENT DECREMENT 
+%token Add_Assign Sub_Assign Mul_Assign Div_Assign Mod_Assign
 %token GRE LSE EQU NEQ;
 %token Other
 
@@ -103,24 +105,12 @@ comp	:
 
 expr	
 	:	CALC
-	|	lockedID '=' CALC 
-	{
-		puts("ASSIGN");
-
-		gbTmp = lookup_symbol(lockedID);
-		if(!gbTmp)
-		{
-			printf(ANSI_COLOR_RED	"<ERROR> can't find variable %s (line %d)\n"	ANSI_COLOR_RESET, lockedID, yylineno);
-		}
-		else
-		{
-			if(gbTmp->mType[0] == 'i')
-				gbTmp->I_data = (int)$3;
-			else if(gbTmp->mType[0] == 'f')
-				gbTmp->F_data = $3;
-		}
-		$$ = $3;
-	}
+	|	lockedID '=' CALC 			{puts("ASSIGN"); $$ = Func_Assign('=', $3);}
+	|	lockedID Add_Assign CALC	{puts("Add Assign"); $$ = Func_Assign('+', $3);}
+	|	lockedID Sub_Assign CALC	{puts("Sub Assign"); $$ = Func_Assign('-', $3);}
+	|	lockedID Mul_Assign CALC	{puts("Mul Assign"); $$ = Func_Assign('*', $3);}
+	|	lockedID Div_Assign CALC	{puts("Div Assign"); $$ = Func_Assign('/', $3);}
+	|	lockedID Mod_Assign CALC	{puts("Mod Assign"); $$ = Func_Assign('%', $3);}
 ;
 
 print_func 
@@ -141,6 +131,7 @@ CALC
 	| CALC '-' CALC	{ $$ = $1 - $3; puts("Sub");}
 	| CALC '*' CALC	{ $$ = $1 * $3; puts("Mul");}
 	| CALC '/' CALC	{ $$ = $1 / $3; if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else puts("Div");}
+	| CALC '%' CALC { $$ = (int)$1 % (int)$3; puts("Mod");}
 	| '(' CALC ')'	{ $$ = $2; }
 	| CALC INCREMENT 
 	{
@@ -195,10 +186,10 @@ CALC
 ;
 
 lockedID 
-	: ID		{ char *p = strtok($1, "+-*/()= \t"); strcpy(lockedID, p);};
+	: ID		{ char *p = strtok($1, "+-*/()=% \t"); strcpy(lockedID, p);};
 
 STORE_ID
-	: ID		{ isthisaID = 5; char *p = strtok($1, "+-*/()= \t"); strcpy(mID, p);};
+	: ID		{ isthisaID = 5; char *p = strtok($1, "+-*/()=% \t"); strcpy(mID, p);};
 
 STORE_STR
 	: STRING	{ strcpy(mStr, $1); };
@@ -317,4 +308,44 @@ void dump_symbol()
 			}
 			temp = temp -> next;
         }	
+}
+
+float Func_Assign(char m, float flt)
+{
+	gbTmp = lookup_symbol(lockedID);
+
+	if(!gbTmp)
+	{   
+		printf(ANSI_COLOR_RED   "<ERROR> can't find variable %s (line %d)\n"    ANSI_COLOR_RESET, lockedID, yylineno);
+	}
+
+	else
+	{
+		if(gbTmp->mType[0] == 'i')
+		{
+			switch(m)
+			{
+				case '=' : gbTmp->I_data = (int)flt; break;
+				case '+' : gbTmp->I_data += (int)flt; break;
+				case '-' : gbTmp->I_data -= (int)flt; break;
+				case '*' : gbTmp->I_data *= (int)flt; break;
+				case '/' : gbTmp->I_data /= (int)flt; break;
+				case '%' : gbTmp->I_data %= (int)flt; break;
+			}
+			return (float)gbTmp->I_data;
+		}
+		else if(gbTmp->mType[0] == 'f')
+		{
+			switch(m)
+			{
+				case '=' : gbTmp->F_data = flt; break;
+				case '+' : gbTmp->F_data += flt; break;
+				case '-' : gbTmp->F_data -= flt; break;
+				case '*' : gbTmp->F_data *= flt; break;
+				case '/' : gbTmp->F_data /= flt; break;
+				case '%' : printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno+1); break;
+			}
+			return gbTmp->F_data;
+		}
+	}
 }

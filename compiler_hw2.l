@@ -30,6 +30,7 @@ id			{letter}+({letter}|{digit})*
 "-"   { return *yytext; }
 "*"   { return *yytext; }
 "/"   { return *yytext; }
+"%"	  { return *yytext; }
 "++"  { return INCREMENT; }
 "--"  { return DECREMENT; }
 
@@ -43,11 +44,11 @@ id			{letter}+({letter}|{digit})*
 
  /* Assignment */
 "="		{ return *yytext; }
-"+="	{ return *yytext; }
-"-="	{ return *yytext; }
-"*="	{ return *yytext; }
-"/="	{ return *yytext; }
-"%="	{ return *yytext; }
+"+="	{ return Add_Assign; }
+"-="	{ return Sub_Assign; }
+"*="	{ return Mul_Assign; }
+"/="	{ return Div_Assign; }
+"%="	{ return Mod_Assign; }
 
  /* Logical */
 "&&"	{ return *yytext; }

@@ -394,8 +394,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 50
-#define YY_END_OF_BUFFER 51
+#define YY_NUM_RULES 51
+#define YY_END_OF_BUFFER 52
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -405,15 +405,15 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[90] =
     {   0,
-        0,    0,    0,    0,   37,   37,   51,   49,   48,   47,
-       21,   35,   49,   49,   22,   23,    3,    1,    2,    4,
-       38,   50,    8,   13,    7,   46,   46,   46,   46,   46,
-       46,   24,   49,   25,   41,   42,   43,   37,   36,   12,
-       18,   19,   16,    5,   14,    6,   15,   40,   45,   17,
-        0,   38,   10,   11,    9,   46,   46,   46,   46,   46,
-       28,   46,   46,   46,   46,   20,   41,   44,   37,   45,
-       39,   46,   46,   30,   33,   46,   31,   46,   29,   46,
-       46,   32,   46,   26,   46,   46,   34,   27,    0
+        0,    0,    0,    0,   38,   38,   52,   50,   49,   48,
+       22,   36,    5,   50,   23,   24,    3,    1,    2,    4,
+       39,   51,    9,   14,    8,   47,   47,   47,   47,   47,
+       47,   25,   50,   26,   42,   43,   44,   38,   37,   13,
+       19,   20,   17,    6,   15,    7,   16,   41,   46,   18,
+        0,   39,   11,   12,   10,   47,   47,   47,   47,   47,
+       29,   47,   47,   47,   47,   21,   42,   45,   38,   46,
+       40,   47,   47,   31,   34,   47,   32,   47,   30,   47,
+       47,   33,   47,   27,   47,   47,   35,   28,    0
     } ;
 
 static yyconst YY_CHAR yy_ec[256] =
@@ -539,11 +539,11 @@ static yyconst flex_int16_t yy_chk[195] =
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static yyconst flex_int32_t yy_rule_can_match_eol[51] =
+static yyconst flex_int32_t yy_rule_can_match_eol[52] =
     {   0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
-    0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0,     };
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
+    0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0,     };
 
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
@@ -886,19 +886,19 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 33 "compiler_hw2.l"
-{ return INCREMENT; }
+{ return *yytext; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 34 "compiler_hw2.l"
+{ return INCREMENT; }
+	YY_BREAK
+case 7:
+YY_RULE_SETUP
+#line 35 "compiler_hw2.l"
 { return DECREMENT; }
 	YY_BREAK
 /* Relational */
-case 7:
-YY_RULE_SETUP
-#line 37 "compiler_hw2.l"
-{ return *yytext; }
-	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 38 "compiler_hw2.l"
@@ -907,29 +907,29 @@ YY_RULE_SETUP
 case 9:
 YY_RULE_SETUP
 #line 39 "compiler_hw2.l"
-{ return GRE; }
+{ return *yytext; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 40 "compiler_hw2.l"
-{ return LSE; }
+{ return GRE; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 41 "compiler_hw2.l"
-{ return EQU; }
+{ return LSE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 42 "compiler_hw2.l"
+{ return EQU; }
+	YY_BREAK
+case 13:
+YY_RULE_SETUP
+#line 43 "compiler_hw2.l"
 { return NEQ; }
 	YY_BREAK
 /* Assignment */
-case 13:
-YY_RULE_SETUP
-#line 45 "compiler_hw2.l"
-{ return *yytext; }
-	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 46 "compiler_hw2.l"
@@ -938,45 +938,45 @@ YY_RULE_SETUP
 case 15:
 YY_RULE_SETUP
 #line 47 "compiler_hw2.l"
-{ return *yytext; }
+{ return Add_Assign; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 48 "compiler_hw2.l"
-{ return *yytext; }
+{ return Sub_Assign; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 49 "compiler_hw2.l"
-{ return *yytext; }
+{ return Mul_Assign; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 50 "compiler_hw2.l"
-{ return *yytext; }
+{ return Div_Assign; }
 	YY_BREAK
-/* Logical */
 case 19:
 YY_RULE_SETUP
-#line 53 "compiler_hw2.l"
-{ return *yytext; }
+#line 51 "compiler_hw2.l"
+{ return Mod_Assign; }
 	YY_BREAK
+/* Logical */
 case 20:
 YY_RULE_SETUP
 #line 54 "compiler_hw2.l"
-{ return *yytext;}
+{ return *yytext; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 55 "compiler_hw2.l"
+{ return *yytext;}
+	YY_BREAK
+case 22:
+YY_RULE_SETUP
+#line 56 "compiler_hw2.l"
 { return *yytext; }
 	YY_BREAK
 /* Delimiters */
-case 22:
-YY_RULE_SETUP
-#line 58 "compiler_hw2.l"
-{ return *yytext; }
-	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 59 "compiler_hw2.l"
@@ -992,100 +992,100 @@ YY_RULE_SETUP
 #line 61 "compiler_hw2.l"
 { return *yytext; }
 	YY_BREAK
-/* Print Keywords */	
 case 26:
 YY_RULE_SETUP
-#line 64 "compiler_hw2.l"
-{ return PRINT; }
+#line 62 "compiler_hw2.l"
+{ return *yytext; }
 	YY_BREAK
+/* Print Keywords */	
 case 27:
 YY_RULE_SETUP
 #line 65 "compiler_hw2.l"
+{ return PRINT; }
+	YY_BREAK
+case 28:
+YY_RULE_SETUP
+#line 66 "compiler_hw2.l"
 { return PRINTLN; }
 	YY_BREAK
 /* Condition and Loop Keywords */
-case 28:
-YY_RULE_SETUP
-#line 68 "compiler_hw2.l"
-{ return IF; }
-	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 69 "compiler_hw2.l"
-{ return ELSE; }
+{ return IF; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 70 "compiler_hw2.l"
+{ return ELSE; }
+	YY_BREAK
+case 31:
+YY_RULE_SETUP
+#line 71 "compiler_hw2.l"
 { return FOR; }
 	YY_BREAK
 /* Declaration Keywords */
-case 31:
-YY_RULE_SETUP
-#line 73 "compiler_hw2.l"
-{ return VAR; }
-	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 74 "compiler_hw2.l"
-{ return VOID; }
+{ return VAR; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 75 "compiler_hw2.l"
-{ return INT; }
+{ return VOID; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 76 "compiler_hw2.l"
+{ return INT; }
+	YY_BREAK
+case 35:
+YY_RULE_SETUP
+#line 77 "compiler_hw2.l"
 { return FLOAT; }
 	YY_BREAK
 /* String Constant */
-case 35:
-YY_RULE_SETUP
-#line 79 "compiler_hw2.l"
-{ strcpy(store, ""); strcpy(store, yytext); BEGIN STRING_STATE;}
-	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 80 "compiler_hw2.l"
-{ strcat(store, yytext); yylval.string = store; BEGIN INITIAL; return STRING;}
+{ strcpy(store, ""); strcpy(store, yytext); BEGIN STRING_STATE;}
 	YY_BREAK
 case 37:
-/* rule 37 can match eol */
 YY_RULE_SETUP
 #line 81 "compiler_hw2.l"
+{ strcat(store, yytext); yylval.string = store; BEGIN INITIAL; return STRING;}
+	YY_BREAK
+case 38:
+/* rule 38 can match eol */
+YY_RULE_SETUP
+#line 82 "compiler_hw2.l"
 { strcat(store, yytext); }
 	YY_BREAK
 /* Number Constant */
-case 38:
-YY_RULE_SETUP
-#line 84 "compiler_hw2.l"
-{ yylval.i_val = atoi(yytext); return I_CONST; }
-	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 85 "compiler_hw2.l"
+{ yylval.i_val = atoi(yytext); return I_CONST; }
+	YY_BREAK
+case 40:
+YY_RULE_SETUP
+#line 86 "compiler_hw2.l"
 { yylval.f_val = atof(yytext); return F_CONST; }
 	YY_BREAK
 /* C type Comment */
-case 40:
-YY_RULE_SETUP
-#line 88 "compiler_hw2.l"
-{ BEGIN COMMENT; }
-	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 89 "compiler_hw2.l"
-{ }
+{ BEGIN COMMENT; }
 	YY_BREAK
 case 42:
-/* rule 42 can match eol */
 YY_RULE_SETUP
 #line 90 "compiler_hw2.l"
 { }
 	YY_BREAK
 case 43:
+/* rule 43 can match eol */
 YY_RULE_SETUP
 #line 91 "compiler_hw2.l"
 { }
@@ -1093,50 +1093,55 @@ YY_RULE_SETUP
 case 44:
 YY_RULE_SETUP
 #line 92 "compiler_hw2.l"
+{ }
+	YY_BREAK
+case 45:
+YY_RULE_SETUP
+#line 93 "compiler_hw2.l"
 { BEGIN INITIAL; }
 	YY_BREAK
 /* C++ type Comment */
-case 45:
+case 46:
 YY_RULE_SETUP
-#line 95 "compiler_hw2.l"
+#line 96 "compiler_hw2.l"
 { }
 	YY_BREAK
 /* Variable ID */
-case 46:
+case 47:
 YY_RULE_SETUP
-#line 98 "compiler_hw2.l"
+#line 99 "compiler_hw2.l"
 { yylval.string = yytext; return ID; }
 	YY_BREAK
 /* others */
-case 47:
-/* rule 47 can match eol */
-YY_RULE_SETUP
-#line 102 "compiler_hw2.l"
-{ return NEWLINE;}
-	YY_BREAK
 case 48:
+/* rule 48 can match eol */
 YY_RULE_SETUP
 #line 103 "compiler_hw2.l"
-/* Ignore */
+{ return NEWLINE;}
 	YY_BREAK
 case 49:
-/* rule 49 can match eol */
 YY_RULE_SETUP
 #line 104 "compiler_hw2.l"
+/* Ignore */
+	YY_BREAK
+case 50:
+/* rule 50 can match eol */
+YY_RULE_SETUP
+#line 105 "compiler_hw2.l"
 { return Other; } /* Ignore other charactor sets */
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 case YY_STATE_EOF(STRING_STATE):
-#line 105 "compiler_hw2.l"
+#line 106 "compiler_hw2.l"
 { return 0; } 
 	YY_BREAK
-case 50:
+case 51:
 YY_RULE_SETUP
-#line 107 "compiler_hw2.l"
+#line 108 "compiler_hw2.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1140 "lex.yy.c"
+#line 1145 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2147,7 +2152,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 107 "compiler_hw2.l"
+#line 108 "compiler_hw2.l"
 
 
 

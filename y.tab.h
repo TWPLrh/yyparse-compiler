@@ -57,15 +57,20 @@ extern int yydebug;
     VOID = 267,
     INCREMENT = 268,
     DECREMENT = 269,
-    GRE = 270,
-    LSE = 271,
-    EQU = 272,
-    NEQ = 273,
-    Other = 274,
-    I_CONST = 275,
-    F_CONST = 276,
-    STRING = 277,
-    ID = 278
+    Add_Assign = 270,
+    Sub_Assign = 271,
+    Mul_Assign = 272,
+    Div_Assign = 273,
+    Mod_Assign = 274,
+    GRE = 275,
+    LSE = 276,
+    EQU = 277,
+    NEQ = 278,
+    Other = 279,
+    I_CONST = 280,
+    F_CONST = 281,
+    STRING = 282,
+    ID = 283
   };
 #endif
 /* Tokens.  */
@@ -81,28 +86,33 @@ extern int yydebug;
 #define VOID 267
 #define INCREMENT 268
 #define DECREMENT 269
-#define GRE 270
-#define LSE 271
-#define EQU 272
-#define NEQ 273
-#define Other 274
-#define I_CONST 275
-#define F_CONST 276
-#define STRING 277
-#define ID 278
+#define Add_Assign 270
+#define Sub_Assign 271
+#define Mul_Assign 272
+#define Div_Assign 273
+#define Mod_Assign 274
+#define GRE 275
+#define LSE 276
+#define EQU 277
+#define NEQ 278
+#define Other 279
+#define I_CONST 280
+#define F_CONST 281
+#define STRING 282
+#define ID 283
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 46 "compiler_hw2.y" /* yacc.c:1909  */
+#line 47 "compiler_hw2.y" /* yacc.c:1909  */
 
 	int i_val;
 	double f_val;
 	char* string;
 
-#line 106 "y.tab.h" /* yacc.c:1909  */
+#line 116 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
