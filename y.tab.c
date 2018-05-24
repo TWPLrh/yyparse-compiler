@@ -1553,37 +1553,37 @@ yyreduce:
 
   case 41:
 #line 152 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (yyvsp[-2].f_val) > (yyvsp[0].f_val); puts("Greater");}
+    { (yyval.f_val) = (yyvsp[-2].f_val) > (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1558 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
 #line 153 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (yyvsp[-2].f_val) < (yyvsp[0].f_val); puts("Lesser");}
+    { (yyval.f_val) = (yyvsp[-2].f_val) < (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1564 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
 #line 154 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (yyvsp[-2].f_val) == (yyvsp[0].f_val); puts("Equal");}
+    { (yyval.f_val) = (yyvsp[-2].f_val) == (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1570 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
 #line 155 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (yyvsp[-2].f_val) >= (yyvsp[0].f_val); puts("Greater or Equal");}
+    { (yyval.f_val) = (yyvsp[-2].f_val) >= (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1576 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
 #line 156 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (yyvsp[-2].f_val) <= (yyvsp[0].f_val); puts("Lesser or Equal");}
+    { (yyval.f_val) = (yyvsp[-2].f_val) <= (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1582 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
 #line 157 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (yyvsp[-2].f_val) != (yyvsp[0].f_val); puts("Not Equal");}
+    { (yyval.f_val) = (yyvsp[-2].f_val) != (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1588 "y.tab.c" /* yacc.c:1646  */
     break;
 

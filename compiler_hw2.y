@@ -149,12 +149,12 @@ CALC
 	| STORE_ID  { $$ = $1 ;}
 	| STORE_INT { $$ = (float)I_data; }
 	| STORE_FLT { $$ = F_data; }
-	| CALC '>' CALC { $$ = $1 > $3; puts("Greater");}
-	| CALC '<' CALC	{ $$ = $1 < $3; puts("Lesser");}
-	| CALC EQU CALC	{ $$ = $1 == $3; puts("Equal");}
-	| CALC GRE CALC	{ $$ = $1 >= $3; puts("Greater or Equal");}
-	| CALC LSE CALC	{ $$ = $1 <= $3; puts("Lesser or Equal");}
-	| CALC NEQ CALC	{ $$ = $1 != $3; puts("Not Equal");}
+	| CALC '>' CALC { $$ = $1 > $3; if($$ == 1) puts("True"); else puts("False");}
+	| CALC '<' CALC	{ $$ = $1 < $3; if($$ == 1) puts("True"); else puts("False");}
+	| CALC EQU CALC	{ $$ = $1 == $3; if($$ == 1) puts("True"); else puts("False");}
+	| CALC GRE CALC	{ $$ = $1 >= $3; if($$ == 1) puts("True"); else puts("False");}
+	| CALC LSE CALC	{ $$ = $1 <= $3; if($$ == 1) puts("True"); else puts("False");}
+	| CALC NEQ CALC	{ $$ = $1 != $3; if($$ == 1) puts("True"); else puts("False");}
 ;
 
 lockedID 
