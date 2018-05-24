@@ -66,11 +66,13 @@ extern int yydebug;
     LSE = 276,
     EQU = 277,
     NEQ = 278,
-    Other = 279,
-    I_CONST = 280,
-    F_CONST = 281,
-    STRING = 282,
-    ID = 283
+    AND = 279,
+    OR = 280,
+    Other = 281,
+    I_CONST = 282,
+    F_CONST = 283,
+    STRING = 284,
+    ID = 285
   };
 #endif
 /* Tokens.  */
@@ -95,11 +97,13 @@ extern int yydebug;
 #define LSE 276
 #define EQU 277
 #define NEQ 278
-#define Other 279
-#define I_CONST 280
-#define F_CONST 281
-#define STRING 282
-#define ID 283
+#define AND 279
+#define OR 280
+#define Other 281
+#define I_CONST 282
+#define F_CONST 283
+#define STRING 284
+#define ID 285
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -112,7 +116,7 @@ union YYSTYPE
 	double f_val;
 	char* string;
 
-#line 116 "y.tab.h" /* yacc.c:1909  */
+#line 120 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

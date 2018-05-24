@@ -964,12 +964,12 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 54 "compiler_hw2.l"
-{ return *yytext; }
+{ return AND; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 55 "compiler_hw2.l"
-{ return *yytext;}
+{ return OR;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP

@@ -51,8 +51,8 @@ id			{letter}+({letter}|{digit})*
 "%="	{ return Mod_Assign; }
 
  /* Logical */
-"&&"	{ return *yytext; }
-"||"	{ return *yytext;}
+"&&"	{ return AND; }
+"||"	{ return OR;}
 "!"		{ return *yytext; }
 
  /* Delimiters */

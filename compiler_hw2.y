@@ -17,7 +17,6 @@ char mType[8];
 int I_data;
 float F_data;
 char mStr[87];
-int isthisaID = 0;
 int printErrflag = 0;
 
 typedef struct symbol_table
@@ -38,6 +37,7 @@ void insert_symbol();
 void dump_symbol();
 float Func_Assign(char, float);
 float IncDecFunc(char);
+void printfunc(float);
 void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
 
 symbol_table *Table, *Head, *gbTmp;
@@ -60,7 +60,8 @@ symbol_table *Table, *Head, *gbTmp;
 %token INT FLOAT VOID
 %token INCREMENT DECREMENT 
 %token Add_Assign Sub_Assign Mul_Assign Div_Assign Mod_Assign
-%token GRE LSE EQU NEQ;
+%token GRE LSE EQU NEQ
+%token AND OR
 %token Other
 
 /* Token with return, which need to sepcify type */
@@ -73,6 +74,7 @@ symbol_table *Table, *Head, *gbTmp;
 %type <f_val> CALC
 %type <f_val> expr
 %type <f_val> IncDecStmt
+%type <f_val> STORE_ID
 
 /* Yacc will start at this nonterminal */
 %start program
@@ -98,15 +100,15 @@ stmt
 	| trap 		
 ;
 
-dcl	: VAR STORE_ID type '=' CALC	{ create_symbol(); }
-	| VAR STORE_ID type		{ create_symbol(); }
+dcl	: VAR lockedID type '=' CALC	{ create_symbol(); }
+	| VAR lockedID type		{ create_symbol(); }
 ;
 
 comp	:
 ;
 
 expr	
-	:	CALC
+	:	CALC						
 	|	lockedID '=' CALC 			{puts("ASSIGN"); $$ = Func_Assign('=', $3);}
 	|	lockedID Add_Assign CALC	{puts("Add Assign"); $$ = Func_Assign('+', $3);}
 	|	lockedID Sub_Assign CALC	{puts("Sub Assign"); $$ = Func_Assign('-', $3);}
@@ -117,8 +119,8 @@ expr
 ;
 
 print_func 
-	: PRINT '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printf("Print : %g\n", $3); }
-	| PRINTLN '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printf("Println : %g\n", $3); }
+	: PRINT '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printfunc($3); }
+	| PRINTLN '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printfunc($3); }
 	| PRINT '(' STORE_STR ')' 	{ printf("Print : %s\n", mStr); }
 	| PRINTLN '(' STORE_STR ')'	{ printf("Println %s\n", mStr); }
 ;
@@ -134,7 +136,7 @@ IncDecStmt
 	|	DECREMENT IncDecStmt {puts("preDec"); $$ = IncDecFunc('-');}
 	|	IncDecStmt INCREMENT {puts("postInc");$$ = IncDecFunc('+') - 1;}
 	|	IncDecStmt DECREMENT {puts("postDec");$$ = IncDecFunc('-') + 1;}
-	|	STORE_ID
+	|	STORE_ID  { $$ = $1;}
 ;
 
 CALC	
@@ -144,11 +146,23 @@ CALC
 	| CALC '/' CALC	{ if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else { puts("Div"); $$ = $$ / $3;}}
 	| CALC '%' CALC { $$ = (int)$1 % (int)$3; puts("Mod");}
 	| '(' CALC ')'	{ $$ = $2; }
-	| STORE_ID  
-	{
+	| STORE_ID  { $$ = $1 ;}
+	| STORE_INT { $$ = (float)I_data; }
+	| STORE_FLT { $$ = F_data; }
+;
+
+lockedID 
+	: ID		{ char *p = strtok($1, "+-*/()=% \t"); strcpy(lockedID, p);};
+
+STORE_ID
+	: ID		
+	{ 
+		char *p = strtok($1, "+-*/()=% \t");
+		strcpy(mID, p); 
+
 		gbTmp = lookup_symbol(mID);
-		
-		if(!gbTmp) 
+
+		if(!gbTmp)
 		{
 			printf(ANSI_COLOR_RED   "<ERROR> can't find variable %s (line %d)\n"    ANSI_COLOR_RESET, mID, yylineno);
 		}
@@ -164,24 +178,16 @@ CALC
 			}
 		}
 	}
-	| STORE_INT { $$ = (float)I_data; }
-	| STORE_FLT { $$ = F_data; }
 ;
-
-lockedID 
-	: ID		{ char *p = strtok($1, "+-*/()=% \t"); strcpy(lockedID, p);};
-
-STORE_ID
-	: ID		{ isthisaID = 5; char *p = strtok($1, "+-*/()=% \t"); strcpy(mID, p);};
 
 STORE_STR
 	: STRING	{ strcpy(mStr, $1); };
 
 STORE_INT
-	: I_CONST	{ isthisaID = 10; I_data = $1; };
+	: I_CONST	{ I_data = $1; };
 
 STORE_FLT
-	: F_CONST	{ isthisaID = 10; F_data = $1; };
+	: F_CONST	{ F_data = $1; };
 
 trap 	: NEWLINE 	{ /* puts("NEWLINE"); */ }
 	| Other 	{ /* puts("Other"); */ }
@@ -220,7 +226,7 @@ void create_symbol()
 
 void insert_symbol() 
 {
-	if(lookup_symbol(mID))
+	if(lookup_symbol(lockedID))
 	{
 		printf(ANSI_COLOR_RED   "<ERROR> re-declaration for variable %s (line %d)\n"    ANSI_COLOR_RESET, mID, yylineno);
 		return;
@@ -229,7 +235,7 @@ void insert_symbol()
 	// set every variable
 	Index ++;
 	Table -> Index = Index;
-	strcpy(Table -> mID, mID);
+	strcpy(Table -> mID, lockedID);
 	strcpy(Table -> mType, mType);
 
 	switch(mType[0])
@@ -335,30 +341,32 @@ float Func_Assign(char m, float flt)
 
 float IncDecFunc(char m)
 {
-	if(isthisaID == 5)
-	{   
-		gbTmp = lookup_symbol(mID);
+	gbTmp = lookup_symbol(mID);
 	
-		if(gbTmp)
-		{   
-			if(gbTmp->mType[0] == 'i')
+	if(gbTmp)
+	{   
+		if(gbTmp->mType[0] == 'i')
+		{
+			switch(m)
 			{
-				switch(m)
-				{
-					case '+': gbTmp -> I_data++; break; 
-					case '-': gbTmp -> I_data--; break;
-				}
-				return (float)gbTmp->I_data;
+				case '+': gbTmp -> I_data++; break; 
+				case '-': gbTmp -> I_data--; break;
 			}
-			else if(gbTmp->mType[0] == 'f')
+			return (float)gbTmp->I_data;
+		}
+		else if(gbTmp->mType[0] == 'f')
+		{
+			switch(m)
 			{
-				switch(m)
-				{
-					case '+': gbTmp -> F_data++; break;
-					case '-': gbTmp -> F_data--; break;
-				}
-				return gbTmp->F_data;
+				case '+': gbTmp -> F_data++; break;
+				case '-': gbTmp -> F_data--; break;
 			}
+			return gbTmp->F_data;
 		}
 	}
+}
+
+void printfunc(float flt)
+{
+	printf("%g\n", flt);
 }
