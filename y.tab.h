@@ -96,7 +96,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 43 "compiler_hw2.y" /* yacc.c:1909  */
+#line 46 "compiler_hw2.y" /* yacc.c:1909  */
 
 	int i_val;
 	double f_val;

@@ -67,6 +67,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 extern int yylineno;
 extern int yylex();
 extern FILE *yyin;
@@ -79,6 +81,7 @@ int I_data;
 float F_data;
 char mStr[87];
 int isthisaID = 0;
+int printErrflag = 0;
 
 typedef struct symbol_table
 {
@@ -101,7 +104,7 @@ void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
 symbol_table *Table, *Head, *gbTmp;
 
 
-#line 105 "y.tab.c" /* yacc.c:339  */
+#line 108 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -187,13 +190,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 43 "compiler_hw2.y" /* yacc.c:355  */
+#line 46 "compiler_hw2.y" /* yacc.c:355  */
 
 	int i_val;
 	double f_val;
 	char* string;
 
-#line 197 "y.tab.c" /* yacc.c:355  */
+#line 200 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -210,7 +213,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 214 "y.tab.c" /* yacc.c:358  */
+#line 217 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -509,10 +512,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    82,    82,    83,    87,    88,    89,    90,    91,    94,
-      95,    98,   102,   103,   120,   121,   122,   123,   127,   128,
-     129,   133,   134,   135,   136,   137,   138,   139,   140,   160,
-     161,   165,   168,   171,   174,   177,   179,   180
+       0,    85,    85,    86,    90,    91,    92,    93,    94,    97,
+      98,   101,   105,   106,   127,   128,   129,   130,   134,   135,
+     136,   140,   141,   142,   143,   144,   145,   159,   173,   193,
+     194,   198,   201,   204,   207,   210,   212,   213
 };
 #endif
 
@@ -1320,127 +1323,155 @@ yyreduce:
   switch (yyn)
     {
         case 9:
-#line 94 "compiler_hw2.y" /* yacc.c:1646  */
+#line 97 "compiler_hw2.y" /* yacc.c:1646  */
     { create_symbol(); }
-#line 1326 "y.tab.c" /* yacc.c:1646  */
+#line 1329 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 95 "compiler_hw2.y" /* yacc.c:1646  */
+#line 98 "compiler_hw2.y" /* yacc.c:1646  */
     { create_symbol(); }
-#line 1332 "y.tab.c" /* yacc.c:1646  */
+#line 1335 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 104 "compiler_hw2.y" /* yacc.c:1646  */
+#line 107 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		puts("ASSIGN");
 
 		gbTmp = lookup_symbol(lockedID);
 		if(!gbTmp)
-			printf("Undeclared Variable --> %s\n", lockedID);
+		{
+			printf(ANSI_COLOR_RED	"<ERROR> can't find variable %s (line %d)\n"	ANSI_COLOR_RESET, lockedID, yylineno);
+		}
 		else
+		{
 			if(gbTmp->mType[0] == 'i')
 				gbTmp->I_data = (int)(yyvsp[0].f_val);
 			else if(gbTmp->mType[0] == 'f')
 				gbTmp->F_data = (yyvsp[0].f_val);
+		}
 		(yyval.f_val) = (yyvsp[0].f_val);
 	}
-#line 1350 "y.tab.c" /* yacc.c:1646  */
+#line 1357 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 120 "compiler_hw2.y" /* yacc.c:1646  */
-    { printf("Print : %g\n", (yyvsp[-1].f_val)); }
-#line 1356 "y.tab.c" /* yacc.c:1646  */
+#line 127 "compiler_hw2.y" /* yacc.c:1646  */
+    { if(printErrflag == 1) {  printErrflag = 0; } else printf("Print : %g\n", (yyvsp[-1].f_val)); }
+#line 1363 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 121 "compiler_hw2.y" /* yacc.c:1646  */
-    { printf("Println : %g\n", (yyvsp[-1].f_val)); }
-#line 1362 "y.tab.c" /* yacc.c:1646  */
+#line 128 "compiler_hw2.y" /* yacc.c:1646  */
+    { if(printErrflag == 1) {  printErrflag = 0; } else printf("Println : %g\n", (yyvsp[-1].f_val)); }
+#line 1369 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 122 "compiler_hw2.y" /* yacc.c:1646  */
+#line 129 "compiler_hw2.y" /* yacc.c:1646  */
     { printf("Print : %s\n", mStr); }
-#line 1368 "y.tab.c" /* yacc.c:1646  */
+#line 1375 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 123 "compiler_hw2.y" /* yacc.c:1646  */
+#line 130 "compiler_hw2.y" /* yacc.c:1646  */
     { printf("Println %s\n", mStr); }
-#line 1374 "y.tab.c" /* yacc.c:1646  */
+#line 1381 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 127 "compiler_hw2.y" /* yacc.c:1646  */
+#line 134 "compiler_hw2.y" /* yacc.c:1646  */
     { strcpy(mType, "int"); }
-#line 1380 "y.tab.c" /* yacc.c:1646  */
+#line 1387 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 128 "compiler_hw2.y" /* yacc.c:1646  */
+#line 135 "compiler_hw2.y" /* yacc.c:1646  */
     { strcpy(mType, "float32"); }
-#line 1386 "y.tab.c" /* yacc.c:1646  */
+#line 1393 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 129 "compiler_hw2.y" /* yacc.c:1646  */
+#line 136 "compiler_hw2.y" /* yacc.c:1646  */
     { strcpy(mType, "void"); }
-#line 1392 "y.tab.c" /* yacc.c:1646  */
+#line 1399 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 133 "compiler_hw2.y" /* yacc.c:1646  */
+#line 140 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-2].f_val) + (yyvsp[0].f_val); puts("Add");}
-#line 1398 "y.tab.c" /* yacc.c:1646  */
+#line 1405 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 134 "compiler_hw2.y" /* yacc.c:1646  */
+#line 141 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-2].f_val) - (yyvsp[0].f_val); puts("Sub");}
-#line 1404 "y.tab.c" /* yacc.c:1646  */
+#line 1411 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 135 "compiler_hw2.y" /* yacc.c:1646  */
+#line 142 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-2].f_val) * (yyvsp[0].f_val); puts("Mul");}
-#line 1410 "y.tab.c" /* yacc.c:1646  */
+#line 1417 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 136 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (yyvsp[-2].f_val) / (yyvsp[0].f_val); puts("Div");}
-#line 1416 "y.tab.c" /* yacc.c:1646  */
+#line 143 "compiler_hw2.y" /* yacc.c:1646  */
+    { (yyval.f_val) = (yyvsp[-2].f_val) / (yyvsp[0].f_val); if((yyvsp[0].f_val) == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else puts("Div");}
+#line 1423 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 137 "compiler_hw2.y" /* yacc.c:1646  */
+#line 144 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-1].f_val); }
-#line 1422 "y.tab.c" /* yacc.c:1646  */
+#line 1429 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 138 "compiler_hw2.y" /* yacc.c:1646  */
-    { lookup_symbol(mID)->I_data++; (yyval.f_val) = (yyvsp[-1].f_val) + 1; puts("Incr");}
-#line 1428 "y.tab.c" /* yacc.c:1646  */
+#line 146 "compiler_hw2.y" /* yacc.c:1646  */
+    {
+		if(isthisaID == 5)
+		{
+			gbTmp = lookup_symbol(mID);
+
+			if(gbTmp)
+			{
+				gbTmp->I_data++;
+			}
+		} 
+		(yyval.f_val) = (yyvsp[-1].f_val) + 1;
+		puts("Incr");
+	}
+#line 1447 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 139 "compiler_hw2.y" /* yacc.c:1646  */
-    { lookup_symbol(mID)->I_data--; (yyval.f_val) = (yyvsp[-1].f_val) - 1; puts("Decr");}
-#line 1434 "y.tab.c" /* yacc.c:1646  */
+#line 160 "compiler_hw2.y" /* yacc.c:1646  */
+    { 
+		if(isthisaID == 5)
+		{
+			gbTmp = lookup_symbol(mID);
+			
+			if(gbTmp)
+			{
+				gbTmp->I_data--;
+			}
+		} 
+		(yyval.f_val) = (yyvsp[-1].f_val) - 1;
+		puts("Decr");
+	}
+#line 1465 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 141 "compiler_hw2.y" /* yacc.c:1646  */
+#line 174 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		gbTmp = lookup_symbol(mID);
 		
 		if(!gbTmp) 
 		{
-			printf("Undeclared Variable --> %s\n", mID);
+			printf(ANSI_COLOR_RED   "<ERROR> can't find variable %s (line %d)\n"    ANSI_COLOR_RESET, mID, yylineno);
 		}
 		else
 		{
@@ -1454,65 +1485,65 @@ yyreduce:
 			}
 		}
 	}
-#line 1458 "y.tab.c" /* yacc.c:1646  */
+#line 1489 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 160 "compiler_hw2.y" /* yacc.c:1646  */
+#line 193 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (float)I_data; }
-#line 1464 "y.tab.c" /* yacc.c:1646  */
+#line 1495 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 161 "compiler_hw2.y" /* yacc.c:1646  */
+#line 194 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = F_data; }
-#line 1470 "y.tab.c" /* yacc.c:1646  */
+#line 1501 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 165 "compiler_hw2.y" /* yacc.c:1646  */
+#line 198 "compiler_hw2.y" /* yacc.c:1646  */
     { char *p = strtok((yyvsp[0].string), "+-*/()= \t"); strcpy(lockedID, p);}
-#line 1476 "y.tab.c" /* yacc.c:1646  */
+#line 1507 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 168 "compiler_hw2.y" /* yacc.c:1646  */
-    { char *p = strtok((yyvsp[0].string), "+-*/()= \t"); strcpy(mID, p);/*strcpy(mID, $1);*/}
-#line 1482 "y.tab.c" /* yacc.c:1646  */
+#line 201 "compiler_hw2.y" /* yacc.c:1646  */
+    { isthisaID = 5; char *p = strtok((yyvsp[0].string), "+-*/()= \t"); strcpy(mID, p);}
+#line 1513 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 171 "compiler_hw2.y" /* yacc.c:1646  */
+#line 204 "compiler_hw2.y" /* yacc.c:1646  */
     { strcpy(mStr, (yyvsp[0].string)); }
-#line 1488 "y.tab.c" /* yacc.c:1646  */
+#line 1519 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 174 "compiler_hw2.y" /* yacc.c:1646  */
-    { I_data = (yyvsp[0].i_val); }
-#line 1494 "y.tab.c" /* yacc.c:1646  */
+#line 207 "compiler_hw2.y" /* yacc.c:1646  */
+    { isthisaID = 10; I_data = (yyvsp[0].i_val); }
+#line 1525 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 177 "compiler_hw2.y" /* yacc.c:1646  */
-    { F_data = (yyvsp[0].f_val); }
-#line 1500 "y.tab.c" /* yacc.c:1646  */
+#line 210 "compiler_hw2.y" /* yacc.c:1646  */
+    { isthisaID = 10; F_data = (yyvsp[0].f_val); }
+#line 1531 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 179 "compiler_hw2.y" /* yacc.c:1646  */
+#line 212 "compiler_hw2.y" /* yacc.c:1646  */
     { /* puts("NEWLINE"); */ }
-#line 1506 "y.tab.c" /* yacc.c:1646  */
+#line 1537 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 180 "compiler_hw2.y" /* yacc.c:1646  */
+#line 213 "compiler_hw2.y" /* yacc.c:1646  */
     { /* puts("Other"); */ }
-#line 1512 "y.tab.c" /* yacc.c:1646  */
+#line 1543 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1516 "y.tab.c" /* yacc.c:1646  */
+#line 1547 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1740,7 +1771,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 183 "compiler_hw2.y" /* yacc.c:1906  */
+#line 216 "compiler_hw2.y" /* yacc.c:1906  */
 
 
 /* C code section */
@@ -1774,6 +1805,12 @@ void create_symbol()
 
 void insert_symbol() 
 {
+	if(lookup_symbol(mID))
+	{
+		printf(ANSI_COLOR_RED   "<ERROR> re-declaration for variable %s (line %d)\n"    ANSI_COLOR_RESET, mID, yylineno);
+		return;
+	}
+
 	// set every variable
 	Index ++;
 	Table -> Index = Index;
@@ -1798,7 +1835,10 @@ void insert_symbol()
 
 symbol_table *lookup_symbol(char const *Look_ID)
 {
-	if (!Head) return NULL;
+	if (!Head) 
+	{ 
+		return NULL;
+	}
 
 	symbol_table *temp = Head;
 

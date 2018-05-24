@@ -1,5 +1,6 @@
-var a int
-var b int = 5
-a = 17
-b = a / (5 + 5)
-print(a = 17 + 8++)
+var a int = 20 
+var b int = 30 
+var a int 
+c = b + 20 
+print(b / 0)
+print("BABAB")

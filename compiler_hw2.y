@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 extern int yylineno;
 extern int yylex();
 extern FILE *yyin;
@@ -16,6 +18,7 @@ int I_data;
 float F_data;
 char mStr[87];
 int isthisaID = 0;
+int printErrflag = 0;
 
 typedef struct symbol_table
 {
@@ -106,19 +109,23 @@ expr
 
 		gbTmp = lookup_symbol(lockedID);
 		if(!gbTmp)
-			printf("Undeclared Variable --> %s\n", lockedID);
+		{
+			printf(ANSI_COLOR_RED	"<ERROR> can't find variable %s (line %d)\n"	ANSI_COLOR_RESET, lockedID, yylineno);
+		}
 		else
+		{
 			if(gbTmp->mType[0] == 'i')
 				gbTmp->I_data = (int)$3;
 			else if(gbTmp->mType[0] == 'f')
 				gbTmp->F_data = $3;
+		}
 		$$ = $3;
 	}
 ;
 
 print_func 
-	: PRINT '(' expr ')' 	{ printf("Print : %g\n", $3); }
-	| PRINTLN '(' expr ')' 	{ printf("Println : %g\n", $3); }
+	: PRINT '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printf("Print : %g\n", $3); }
+	| PRINTLN '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printf("Println : %g\n", $3); }
 	| PRINT '(' STORE_STR ')' 	{ printf("Print : %s\n", mStr); }
 	| PRINTLN '(' STORE_STR ')'	{ printf("Println %s\n", mStr); }
 ;
@@ -133,17 +140,43 @@ CALC
 	: CALC '+' CALC	{ $$ = $1 + $3; puts("Add");}
 	| CALC '-' CALC	{ $$ = $1 - $3; puts("Sub");}
 	| CALC '*' CALC	{ $$ = $1 * $3; puts("Mul");}
-	| CALC '/' CALC	{ $$ = $1 / $3; puts("Div");}
+	| CALC '/' CALC	{ $$ = $1 / $3; if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else puts("Div");}
 	| '(' CALC ')'	{ $$ = $2; }
-	| CALC INCREMENT { lookup_symbol(mID)->I_data++; $$ = $1 + 1; puts("Incr");}
-	| CALC DECREMENT { lookup_symbol(mID)->I_data--; $$ = $1 - 1; puts("Decr");}
+	| CALC INCREMENT 
+	{
+		if(isthisaID == 5)
+		{
+			gbTmp = lookup_symbol(mID);
+
+			if(gbTmp)
+			{
+				gbTmp->I_data++;
+			}
+		} 
+		$$ = $1 + 1;
+		puts("Incr");
+	}
+	| CALC DECREMENT 
+	{ 
+		if(isthisaID == 5)
+		{
+			gbTmp = lookup_symbol(mID);
+			
+			if(gbTmp)
+			{
+				gbTmp->I_data--;
+			}
+		} 
+		$$ = $1 - 1;
+		puts("Decr");
+	}
 	| STORE_ID  
 	{
 		gbTmp = lookup_symbol(mID);
 		
 		if(!gbTmp) 
 		{
-			printf("Undeclared Variable --> %s\n", mID);
+			printf(ANSI_COLOR_RED   "<ERROR> can't find variable %s (line %d)\n"    ANSI_COLOR_RESET, mID, yylineno);
 		}
 		else
 		{
@@ -165,16 +198,16 @@ lockedID
 	: ID		{ char *p = strtok($1, "+-*/()= \t"); strcpy(lockedID, p);};
 
 STORE_ID
-	: ID		{ char *p = strtok($1, "+-*/()= \t"); strcpy(mID, p);/*strcpy(mID, $1);*/};
+	: ID		{ isthisaID = 5; char *p = strtok($1, "+-*/()= \t"); strcpy(mID, p);};
 
 STORE_STR
 	: STRING	{ strcpy(mStr, $1); };
 
 STORE_INT
-	: I_CONST	{ I_data = $1; };
+	: I_CONST	{ isthisaID = 10; I_data = $1; };
 
 STORE_FLT
-	: F_CONST	{ F_data = $1; };
+	: F_CONST	{ isthisaID = 10; F_data = $1; };
 
 trap 	: NEWLINE 	{ /* puts("NEWLINE"); */ }
 	| Other 	{ /* puts("Other"); */ }
@@ -213,6 +246,12 @@ void create_symbol()
 
 void insert_symbol() 
 {
+	if(lookup_symbol(mID))
+	{
+		printf(ANSI_COLOR_RED   "<ERROR> re-declaration for variable %s (line %d)\n"    ANSI_COLOR_RESET, mID, yylineno);
+		return;
+	}
+
 	// set every variable
 	Index ++;
 	Table -> Index = Index;
@@ -237,7 +276,10 @@ void insert_symbol()
 
 symbol_table *lookup_symbol(char const *Look_ID)
 {
-	if (!Head) return NULL;
+	if (!Head) 
+	{ 
+		return NULL;
+	}
 
 	symbol_table *temp = Head;
 
