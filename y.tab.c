@@ -1488,7 +1488,7 @@ yyreduce:
 
   case 35:
 #line 144 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (yyvsp[-2].f_val) / (yyvsp[0].f_val); if((yyvsp[0].f_val) == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else puts("Div");}
+    { if((yyvsp[0].f_val) == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else { puts("Div"); (yyval.f_val) = (yyval.f_val) / (yyvsp[0].f_val);}}
 #line 1493 "y.tab.c" /* yacc.c:1646  */
     break;
 

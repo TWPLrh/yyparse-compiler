@@ -141,7 +141,7 @@ CALC
 	: CALC '+' CALC	{ $$ = $1 + $3; puts("Add");}
 	| CALC '-' CALC	{ $$ = $1 - $3; puts("Sub");}
 	| CALC '*' CALC	{ $$ = $1 * $3; puts("Mul");}
-	| CALC '/' CALC	{ $$ = $1 / $3; if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else puts("Div");}
+	| CALC '/' CALC	{ if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else { puts("Div"); $$ = $$ / $3;}}
 	| CALC '%' CALC { $$ = (int)$1 % (int)$3; puts("Mod");}
 	| '(' CALC ')'	{ $$ = $2; }
 	| STORE_ID  
