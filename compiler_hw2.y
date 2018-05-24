@@ -37,6 +37,7 @@ void create_symbol();
 void insert_symbol();
 void dump_symbol();
 float Func_Assign(char, float);
+float IncDecFunc(char);
 void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
 
 symbol_table *Table, *Head, *gbTmp;
@@ -71,6 +72,7 @@ symbol_table *Table, *Head, *gbTmp;
 /* Nonterminal with return, which need to sepcify type */
 %type <f_val> CALC
 %type <f_val> expr
+%type <f_val> IncDecStmt
 
 /* Yacc will start at this nonterminal */
 %start program
@@ -111,6 +113,7 @@ expr
 	|	lockedID Mul_Assign CALC	{puts("Mul Assign"); $$ = Func_Assign('*', $3);}
 	|	lockedID Div_Assign CALC	{puts("Div Assign"); $$ = Func_Assign('/', $3);}
 	|	lockedID Mod_Assign CALC	{puts("Mod Assign"); $$ = Func_Assign('%', $3);}
+	|	IncDecStmt
 ;
 
 print_func 
@@ -126,6 +129,14 @@ type
 	| VOID 		{ strcpy(mType, "void"); }
 ;
 
+IncDecStmt
+	:	INCREMENT IncDecStmt {puts("preInc"); $$ = IncDecFunc('+');}
+	|	DECREMENT IncDecStmt {puts("preDec"); $$ = IncDecFunc('-');}
+	|	IncDecStmt INCREMENT {puts("postInc");$$ = IncDecFunc('+') - 1;}
+	|	IncDecStmt DECREMENT {puts("postDec");$$ = IncDecFunc('-') + 1;}
+	|	STORE_ID
+;
+
 CALC	
 	: CALC '+' CALC	{ $$ = $1 + $3; puts("Add");}
 	| CALC '-' CALC	{ $$ = $1 - $3; puts("Sub");}
@@ -133,34 +144,6 @@ CALC
 	| CALC '/' CALC	{ $$ = $1 / $3; if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else puts("Div");}
 	| CALC '%' CALC { $$ = (int)$1 % (int)$3; puts("Mod");}
 	| '(' CALC ')'	{ $$ = $2; }
-	| CALC INCREMENT 
-	{
-		if(isthisaID == 5)
-		{
-			gbTmp = lookup_symbol(mID);
-
-			if(gbTmp)
-			{
-				gbTmp->I_data++;
-			}
-		} 
-		$$ = $1 + 1;
-		puts("Incr");
-	}
-	| CALC DECREMENT 
-	{ 
-		if(isthisaID == 5)
-		{
-			gbTmp = lookup_symbol(mID);
-			
-			if(gbTmp)
-			{
-				gbTmp->I_data--;
-			}
-		} 
-		$$ = $1 - 1;
-		puts("Decr");
-	}
 	| STORE_ID  
 	{
 		gbTmp = lookup_symbol(mID);
@@ -346,6 +329,36 @@ float Func_Assign(char m, float flt)
 				case '%' : printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno+1); break;
 			}
 			return gbTmp->F_data;
+		}
+	}
+}
+
+float IncDecFunc(char m)
+{
+	if(isthisaID == 5)
+	{   
+		gbTmp = lookup_symbol(mID);
+	
+		if(gbTmp)
+		{   
+			if(gbTmp->mType[0] == 'i')
+			{
+				switch(m)
+				{
+					case '+': gbTmp -> I_data++; break; 
+					case '-': gbTmp -> I_data--; break;
+				}
+				return (float)gbTmp->I_data;
+			}
+			else if(gbTmp->mType[0] == 'f')
+			{
+				switch(m)
+				{
+					case '+': gbTmp -> F_data++; break;
+					case '-': gbTmp -> F_data--; break;
+				}
+				return gbTmp->F_data;
+			}
 		}
 	}
 }
