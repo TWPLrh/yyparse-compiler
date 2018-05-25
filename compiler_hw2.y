@@ -18,6 +18,7 @@ int I_data;
 float F_data;
 char mStr[87];
 int printErrflag = 0;
+int thisflt = 0;
 
 typedef struct symbol_table
 {
@@ -119,8 +120,8 @@ expr
 ;
 
 print_func 
-	: PRINT '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printfunc($3); }
-	| PRINTLN '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printfunc($3); }
+	: PRINT '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printf("Print : %g\n", $3); }
+	| PRINTLN '(' expr ')' 	{ if(printErrflag == 1) {  printErrflag = 0; } else printf("Println : %g\n", $3); }
 	| PRINT '(' STORE_STR ')' 	{ printf("Print : %s\n", mStr); }
 	| PRINTLN '(' STORE_STR ')'	{ printf("Println %s\n", mStr); }
 ;
@@ -136,19 +137,19 @@ IncDecStmt
 	|	DECREMENT IncDecStmt {puts("preDec"); $$ = IncDecFunc('-');}
 	|	IncDecStmt INCREMENT {puts("postInc");$$ = IncDecFunc('+') - 1;}
 	|	IncDecStmt DECREMENT {puts("postDec");$$ = IncDecFunc('-') + 1;}
-	|	STORE_ID  { $$ = $1;}
+	|	STORE_ID  { $$ = $1; }
 ;
 
 CALC	
-	: CALC '+' CALC	{ $$ = $1 + $3; puts("Add");}
-	| CALC '-' CALC	{ $$ = $1 - $3; puts("Sub");}
-	| CALC '*' CALC	{ $$ = $1 * $3; puts("Mul");}
-	| CALC '/' CALC	{ if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno + 1);} else { puts("Div"); $$ = $$ / $3;}}
-	| CALC '%' CALC { $$ = (int)$1 % (int)$3; puts("Mod");}
+	: CALC '+' CALC	{ puts("Add");  $$ = $1 + $3;}
+	| CALC '-' CALC	{ puts("Sub");  $$ = $1 - $3;}
+	| CALC '*' CALC	{ puts("Mul");  $$ = $1 * $3;}
+	| CALC '/' CALC	{ if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno);} else { puts("Div"); $$ = $1 / $3;} }
+	| CALC '%' CALC { if(thisflt == 1) {printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno);} else{ puts("Mod"); $$ = (int)$1 % (int)$3;} }
 	| '(' CALC ')'	{ $$ = $2; }
-	| STORE_ID  { $$ = $1 ;}
-	| STORE_INT { $$ = (float)I_data; }
-	| STORE_FLT { $$ = F_data; }
+	| STORE_ID  { $$ = $1; }
+	| STORE_INT { $$ = (float)I_data;}
+	| STORE_FLT { $$ = F_data;}
 	| CALC '>' CALC { $$ = $1 > $3; if($$ == 1) puts("True"); else puts("False");}
 	| CALC '<' CALC	{ $$ = $1 < $3; if($$ == 1) puts("True"); else puts("False");}
 	| CALC EQU CALC	{ $$ = $1 == $3; if($$ == 1) puts("True"); else puts("False");}
@@ -158,11 +159,11 @@ CALC
 ;
 
 lockedID 
-	: ID		{ char *p = strtok($1, "+-*/()=% \t"); strcpy(lockedID, p);};
+	: ID		{ char *p = strtok($1, "+-*/()=%>< \t"); strcpy(lockedID, p);};
 
 STORE_ID
 	: ID		
-	{ 
+	{
 		char *p = strtok($1, "+-*/()=%>< \t");
 		strcpy(mID, p); 
 
@@ -180,6 +181,7 @@ STORE_ID
 			}
 			else if(gbTmp->mType[0] == 'f')
 			{
+				thisflt = 1;
 				$$ = gbTmp->F_data;
 			}
 		}
@@ -190,12 +192,12 @@ STORE_STR
 	: STRING	{ strcpy(mStr, $1); };
 
 STORE_INT
-	: I_CONST	{ I_data = $1; };
+	: I_CONST	{ I_data = $1;};
 
 STORE_FLT
-	: F_CONST	{ F_data = $1; };
+	: F_CONST	{ F_data = $1; thisflt = 1;};
 
-trap 	: NEWLINE 	{ /* puts("NEWLINE"); */ }
+trap 	: NEWLINE 	{ /* puts("NEWLINE"); */ thisflt = 0;}
 	| Other 	{ /* puts("Other"); */ }
 ;
 
@@ -338,7 +340,7 @@ float Func_Assign(char m, float flt)
 				case '-' : gbTmp->F_data -= flt; break;
 				case '*' : gbTmp->F_data *= flt; break;
 				case '/' : gbTmp->F_data /= flt; break;
-				case '%' : printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno+1); break;
+				case '%' : printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); break;
 			}
 			return gbTmp->F_data;
 		}
@@ -370,9 +372,4 @@ float IncDecFunc(char m)
 			return gbTmp->F_data;
 		}
 	}
-}
-
-void printfunc(float flt)
-{
-	printf("%g\n", flt);
 }

@@ -6,3 +6,8 @@ print(x)
 // print out the string constant
 print("Hello World")
 println("Hello World")
+
+// print need to consider the arithmetic operation
+print(1 + 2)
+println(1 * x + 5)
+
