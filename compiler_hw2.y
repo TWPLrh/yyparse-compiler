@@ -145,7 +145,20 @@ CALC
 	| CALC '-' CALC	{ puts("Sub");  $$ = $1 - $3;}
 	| CALC '*' CALC	{ puts("Mul");  $$ = $1 * $3;}
 	| CALC '/' CALC	{ if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno);} else { puts("Div"); $$ = $1 / $3;} }
-	| CALC '%' CALC { if(thisflt == 1) {printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno);} else{ puts("Mod"); $$ = (int)$1 % (int)$3;} }
+	| CALC '%' CALC
+	{
+		float a = $1 - (int)$1;
+		float c = $3 - (int)$3;
+
+		if( a == 0 && c == 0 )
+		{
+			$$ = (int)$1 % (int)$3;
+		}
+		else
+		{
+			printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno);
+		}
+	}
 	| '(' CALC ')'	{ $$ = $2; }
 	| STORE_ID  { $$ = $1; }
 	| STORE_INT { $$ = (float)I_data;}
@@ -181,7 +194,6 @@ STORE_ID
 			}
 			else if(gbTmp->mType[0] == 'f')
 			{
-				thisflt = 1;
 				$$ = gbTmp->F_data;
 			}
 		}
@@ -195,9 +207,9 @@ STORE_INT
 	: I_CONST	{ I_data = $1;};
 
 STORE_FLT
-	: F_CONST	{ F_data = $1; thisflt = 1;};
+	: F_CONST	{ F_data = $1;};
 
-trap 	: NEWLINE 	{ /* puts("NEWLINE"); */ thisflt = 0;}
+trap 	: NEWLINE 	{ /* puts("NEWLINE"); */}
 	| Other 	{ /* puts("Other"); */ }
 ;
 
