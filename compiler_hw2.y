@@ -18,7 +18,6 @@ int I_data;
 float F_data;
 char mStr[87];
 int printErrflag = 0;
-int thisflt = 0;
 
 typedef struct symbol_table
 {
