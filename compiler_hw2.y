@@ -18,6 +18,7 @@ int I_data;
 float F_data;
 char mStr[87];
 int printErrflag = 0;
+int ScopeIndex = 0;
 
 typedef struct symbol_table
 {
@@ -27,8 +28,20 @@ typedef struct symbol_table
         int I_data;
         float F_data;
         struct symbol_table *next;
-
 }symbol_table;
+
+typedef struct scope
+{
+	int ScopeIndex;
+
+	struct scope *next;
+	struct scope *child;
+	struct scope *mother;
+
+	symbol_table inScope_table;
+	symbol_table inScope_head;
+
+}scope;
 
 /* Symbol table function - you can add new function if need. */
 symbol_table *lookup_symbol(char const *);
@@ -152,6 +165,7 @@ CALC
 		if( a == 0 && c == 0 )
 		{
 			$$ = (int)$1 % (int)$3;
+			puts("Mod");
 		}
 		else
 		{
