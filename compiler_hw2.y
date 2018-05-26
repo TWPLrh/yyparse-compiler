@@ -90,6 +90,8 @@ scope *Scope, *MasterScope;
 %type <f_val> expr
 %type <f_val> IncDecStmt
 %type <f_val> STORE_ID
+%type <f_val> STORE_INT
+%type <f_val> STORE_FLT
 
 /* Yacc will start at this nonterminal */
 %start program
@@ -161,46 +163,78 @@ CALC
 	| CALC '-' CALC	{ puts("Sub");  $$ = $1 - $3;}
 	| CALC '*' CALC	{ puts("Mul");  $$ = $1 * $3;}
 	| CALC '/' CALC	{ if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno);} else { puts("Div"); $$ = $1 / $3;} }
-	| STORE_ID '%' CALC
-	{
-		float a = $1 - (int)$1;
-		float c = $3 - (int)$3;
+	| CALC '%' CALC { $$ = (int)$1 % (int)$3;}
+	| CALC CALC { printf(ANSI_COLOR_RED   "<ERROR> Syntax Error (line %d)\n"    ANSI_COLOR_RESET, yylineno); return 0; }
 
-		if( a == 0 && c == 0 )
+	| STORE_ID '%' CALC 
+	{ 
+		if ( isflt == 1 )
 		{
-			$$ = (int)$1 % (int)$3;
-			puts("Mod");
+			isflt = 0;
+			printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); 
+			$$ = 0;
 		}
+
 		else
 		{
-			printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno);
-			$$ = 0;
+			$$ = (int)$1 % (int)$3;
 		}
 	}
-	| CALC '%' STORE_ID
-	{
-        float a = $1 - (int)$1;
-        float c = $3 - (int)$3;
-
-        if( a == 0 && c == 0 ) 
+	| CALC '%' STORE_ID 
+	{ 
+        if ( isflt == 1 ) 
         {   
-            $$ = (int)$1 % (int)$3;
-            puts("Mod");
+            isflt = 0;
+            printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); 
+            $$ = 0;
         }   
+
         else
         {   
-            printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno);
-			$$ = 0;
+            $$ = (int)$1 % (int)$3; 
+        }	
+	}
+	| STORE_ID '%' STORE_INT 
+	{
+        if ( isflt == 1 ) 
+        {   
+            isflt = 0;
+            printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); 
+            $$ = 0;
+        }   
+
+        else
+        {   
+            $$ = (int)$1 % I_data;
         }
 	}
-	| STORE_INT '%' CALC { $$ = I_data % (int)$3; }
+	| STORE_INT '%' STORE_ID 
+	{
+        if ( isflt == 1 ) 
+        {   
+            isflt = 0;
+            printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); 
+            $$ = 0;
+        }   
+
+        else
+        {   
+            $$ = I_data % (int)$3; 
+        }
+	}
+	| STORE_INT '%' STORE_INT { $$ = (int)$1 % (int)$3; }
+	| STORE_ID '%' STORE_FLT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0; }
+	| STORE_FLT '%' STORE_ID { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0; }
+	| STORE_INT '%' STORE_FLT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
+	| STORE_FLT '%' STORE_INT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
 	| STORE_FLT '%' CALC { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
-	| CALC '%' STORE_INT { $$ = (int)$1 % I_data; }
 	| CALC '%' STORE_FLT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
+	| STORE_FLT '%' STORE_FLT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
+
 	| '(' CALC ')'	{ $$ = $2; }
 	| STORE_ID  { $$ = $1; }
-	| STORE_INT { $$ = (float)I_data;}
-	| STORE_FLT { $$ = F_data;}
+	| STORE_INT { $$ = $1;}
+	| STORE_FLT { $$ = $1;}
 	| CALC '>' CALC { $$ = $1 > $3; if($$ == 1) puts("True"); else puts("False");}
 	| CALC '<' CALC	{ $$ = $1 < $3; if($$ == 1) puts("True"); else puts("False");}
 	| CALC EQU CALC	{ $$ = $1 == $3; if($$ == 1) puts("True"); else puts("False");}
@@ -243,13 +277,13 @@ STORE_STR
 	: STRING	{ strcpy(mStr, $1); };
 
 STORE_INT
-	: I_CONST	{ I_data = $1;};
+	: I_CONST	{ $$ = (float)$1; I_data = $1;};
 
 STORE_FLT
-	: F_CONST	{ F_data = $1;};
+	: F_CONST	{ $$ = $1; F_data = $1;};
 
 trap 	: NEWLINE 	{ /* puts("NEWLINE"); */}
-	| Other 	{ /* puts("Other"); */ }
+	| Other 	{  /*puts("Other");*/  } 
 ;
 
 %%
