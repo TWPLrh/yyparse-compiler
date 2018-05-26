@@ -18,7 +18,9 @@ int I_data;
 float F_data;
 char mStr[87];
 int printErrflag = 0;
-int ScopeIndex = 0;
+int initflag = 0;
+int ScopeDepth = 0;
+int isflt;
 
 typedef struct symbol_table
 {
@@ -32,14 +34,11 @@ typedef struct symbol_table
 
 typedef struct scope
 {
-	int ScopeIndex;
-
-	struct scope *next;
 	struct scope *child;
 	struct scope *mother;
 
-	symbol_table inScope_table;
-	symbol_table inScope_head;
+	symbol_table *inScope_table;
+	symbol_table *inScope_head;
 
 }scope;
 
@@ -48,12 +47,15 @@ symbol_table *lookup_symbol(char const *);
 void create_symbol();
 void insert_symbol();
 void dump_symbol();
+void IAlwaysInit();
+void scopefunc(char);
 float Func_Assign(char, float);
 float IncDecFunc(char);
 void printfunc(float);
 void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
 
 symbol_table *Table, *Head, *gbTmp;
+scope *Scope, *MasterScope;
 
 %}
 
@@ -117,7 +119,9 @@ dcl	: VAR lockedID type '=' CALC	{ create_symbol(); }
 	| VAR lockedID type		{ create_symbol(); }
 ;
 
-comp	:
+comp	
+	: '{'	{ scopefunc('{'); }
+	| '}'	{ scopefunc('}'); }
 ;
 
 expr	
@@ -157,7 +161,7 @@ CALC
 	| CALC '-' CALC	{ puts("Sub");  $$ = $1 - $3;}
 	| CALC '*' CALC	{ puts("Mul");  $$ = $1 * $3;}
 	| CALC '/' CALC	{ if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno);} else { puts("Div"); $$ = $1 / $3;} }
-	| CALC '%' CALC
+	| STORE_ID '%' CALC
 	{
 		float a = $1 - (int)$1;
 		float c = $3 - (int)$3;
@@ -170,8 +174,29 @@ CALC
 		else
 		{
 			printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno);
+			$$ = 0;
 		}
 	}
+	| CALC '%' STORE_ID
+	{
+        float a = $1 - (int)$1;
+        float c = $3 - (int)$3;
+
+        if( a == 0 && c == 0 ) 
+        {   
+            $$ = (int)$1 % (int)$3;
+            puts("Mod");
+        }   
+        else
+        {   
+            printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno);
+			$$ = 0;
+        }
+	}
+	| STORE_INT '%' CALC { $$ = I_data % (int)$3; }
+	| STORE_FLT '%' CALC { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
+	| CALC '%' STORE_INT { $$ = (int)$1 % I_data; }
+	| CALC '%' STORE_FLT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
 	| '(' CALC ')'	{ $$ = $2; }
 	| STORE_ID  { $$ = $1; }
 	| STORE_INT { $$ = (float)I_data;}
@@ -185,12 +210,12 @@ CALC
 ;
 
 lockedID 
-	: ID		{ char *p = strtok($1, "+-*/()=%>< \t"); strcpy(lockedID, p);};
+	: ID		{ char *p = strtok($1, "+-*/()=%><$!@#^& \t"); strcpy(lockedID, p);};
 
 STORE_ID
 	: ID		
 	{
-		char *p = strtok($1, "+-*/()=%>< \t");
+		char *p = strtok($1, "+-*/()=%><$!@#^& \t");
 		strcpy(mID, p); 
 
 		gbTmp = lookup_symbol(mID);
@@ -207,6 +232,7 @@ STORE_ID
 			}
 			else if(gbTmp->mType[0] == 'f')
 			{
+				isflt = 1;
 				$$ = gbTmp->F_data;
 			}
 		}
@@ -233,6 +259,7 @@ int main(int argc, char** argv)
 {
 	yyin = fopen(argv[1], "r");	
 
+	IAlwaysInit();
 	yylineno = 0;
 	
 	yyparse();
@@ -245,13 +272,58 @@ int main(int argc, char** argv)
 	return 0;
 }
 
+void IAlwaysInit()
+{
+	Table = malloc(sizeof(symbol_table));
+	Head = Table;
+
+	Scope = malloc(sizeof(scope));
+	MasterScope = Scope;
+
+	Scope->mother = NULL;
+	Scope->child = NULL;
+	
+	Scope->inScope_table = Table;
+	Scope->inScope_head = Head;
+
+//	printf("%p Master\n", Scope);
+}
+
+void scopefunc(char m)
+{
+	/*
+		每個Scope有自己的Symbol Table -> 所以每當遇到左括號, 就要清空一次 Symbol Table ？ 或是 new
+		應該要直接使用scope裡面的inScope_talbe, inScope_head 才對.
+		如果在自己的Symbol Table找不到變數 -> 則尋找Mother.
+		如何知道深度？
+		
+	*/
+
+	scope *mother;
+
+	if(m == '{') // 如果遇到左括號
+	{
+		Scope -> child = malloc(sizeof(scope)); // 分配空間
+		mother = Scope; // 設給 mother 當前的 Scope
+
+		Scope = Scope -> child; // 當前 Scope 設為 child
+		Scope -> mother = mother; // child 的 mother 等於前面設定好的 mother
+
+//		printf("%p\n", Scope);
+	}
+	else if(m == '}') // 如果遇到右括號
+	{
+		Scope = Scope -> mother; // Scope 設為 mother
+//		printf("%p\n", Scope);
+	}
+}
+
 void create_symbol() 
 {	
-	if ( !Table )
+	if ( initflag == 0 )
 	{
+		initflag++;
 		fprintf(stdout, "Create symbol table\n");
-		Table = malloc(sizeof(symbol_table));
-		Head = Table;
 	}
 
 	insert_symbol();
