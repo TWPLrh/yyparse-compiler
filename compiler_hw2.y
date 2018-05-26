@@ -23,6 +23,9 @@ int isflt = 0;
 int ScopeDepth = 0;
 int MaxScopeDepth = 0;
 
+int l = 0;
+int r = 0;
+
 typedef struct symbol_table
 {
 		int ScopeDepth;
@@ -36,18 +39,15 @@ typedef struct symbol_table
 
 typedef struct scope
 {
-	struct scope *childhead;
-	struct scope *childnext;
-
 	struct scope *child;
 	struct scope *mother;
 
 	symbol_table *inScope_head;
 	symbol_table *inScope_list;
-
 }scope;
 
-scope ScopeTable[128] = {};
+int scopeindex = 0;
+scope *scopelist[256];
 
 /* Symbol table function - you can add new function if need. */
 symbol_table *lookup_symbol(char const *);
@@ -322,6 +322,10 @@ void IAlwaysInit()
 
 	Scope -> inScope_head = Scope->inScope_list;
 	MasterScope = Scope;
+
+	scopelist[0] = Scope;
+
+	printf("All mother%p\n", MasterScope);
 }
 
 void scopefunc(char m)
@@ -336,6 +340,7 @@ void scopefunc(char m)
 	if(m == '{') // 如果遇到左括號
 	{
 		Scope -> child = malloc(sizeof(scope)); // 分配空間
+
 		mother = Scope; 					// 設給 mother 當前的 Scope
 
 		Scope = Scope -> child; 			// 當前 Scope 設為 child
@@ -345,12 +350,28 @@ void scopefunc(char m)
 
 		Scope -> inScope_list = malloc(sizeof(symbol_table));
 		Scope -> inScope_head = Scope -> inScope_list;
+
+		scopeindex ++; // 每個scope都有自己的 index
+		scopelist[scopeindex] = Scope; 
+
+		l = 1;
 	}
 
 	else if(m == '}') // 如果遇到右括號
 	{
 		Scope = Scope -> mother; // Scope 設為 mother
 		ScopeDepth --; // 深度 - 1
+		
+		if( l == 1 && r == 0 )
+		{
+			Scope -> child -> child = malloc(sizeof(scope));
+			r = 1;
+		}
+	}
+
+	if (ScopeDepth == 0)
+	{
+		r = 0;
 	}
 
 	if (MaxScopeDepth < ScopeDepth)
@@ -391,17 +412,40 @@ void insert_symbol()
 	Scope -> inScope_list = Scope-> inScope_list -> next;
 }
 
-symbol_table *lookup_symbol(char const *Look_ID) // 只搜尋自己的Scope
+symbol_table *lookup_symbol(char const *Look_ID) // 只搜尋自己的Scope 找不到再找 mother
 {
-	
+			
 }
 
 void dump_symbol()
 {
+	if(!MasterScope)
+		return;
+
 	puts("ID\tType\tData\tDepth");
 
 	scope *tmp = MasterScope;
 
+	int i = 0;
+
+	for ( i = 0; i <= scopeindex; i++)
+	{
+		symbol_table *ttmp = scopelist[i] -> inScope_head;
+
+		while(ttmp -> next != NULL)
+		{
+             if(ttmp -> mType[0] == 'i')
+             {
+                 printf("%s\t%s\t%d\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->I_data, ttmp->ScopeDepth); 
+             }
+             else if(ttmp -> mType[0] == 'f')
+             {
+                 printf("%s\t%s\t%g\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->F_data, ttmp->ScopeDepth);
+             }
+             ttmp = ttmp -> next;
+		}
+	}
+/*
 	while(tmp -> child != NULL)
 	{
 		symbol_table *ttmp = tmp -> inScope_head;
@@ -418,8 +462,10 @@ void dump_symbol()
 			}
 			ttmp = ttmp -> next;
 		}
+
 		tmp = tmp -> child;
 	}
+*/
 }
 
 float Func_Assign(char m, float flt)
