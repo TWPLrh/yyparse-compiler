@@ -213,7 +213,7 @@ CALC
         if ( isflt == 1 ) 
         {   
             isflt = 0;
-            printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); 
+            printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno+1); 
             $$ = 0;
         }   
 
@@ -225,7 +225,7 @@ CALC
 	| STORE_INT '%' STORE_INT { $$ = (int)$1 % (int)$3; }
 	| STORE_ID '%' STORE_FLT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0; }
 	| STORE_FLT '%' STORE_ID { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0; }
-	| STORE_INT '%' STORE_FLT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
+	| STORE_INT '%' STORE_FLT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno+1); $$ = 0;}
 	| STORE_FLT '%' STORE_INT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
 	| STORE_FLT '%' CALC { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}
 	| CALC '%' STORE_FLT { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); $$ = 0;}

@@ -1637,7 +1637,7 @@ yyreduce:
         if ( isflt == 1 ) 
         {   
             isflt = 0;
-            printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); 
+            printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno+1); 
             (yyval.f_val) = 0;
         }   
 
@@ -1669,7 +1669,7 @@ yyreduce:
 
   case 46:
 #line 228 "compiler_hw2.y" /* yacc.c:1646  */
-    { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); (yyval.f_val) = 0;}
+    { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno+1); (yyval.f_val) = 0;}
 #line 1674 "y.tab.c" /* yacc.c:1646  */
     break;
 
