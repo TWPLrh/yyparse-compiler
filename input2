@@ -4,26 +4,29 @@ var c int = 5
 var d int = 12
 var x int
 
-x = 1.7 % 1.1 	// c_flt % c_flt
+x = 1.7 % 1.1 	// f_cnt % f_cnt (1
 
-x = a % 1.1 	// flt % c_flt
+x = a % 1.1 	// f_val % f_cnt (2
 
-x = 1.1 % a 	// c_flt % flt
+x = 1.1 % a 	// f_cnt % f_val (3
 
-x = 5 % 1.7 	// c_int % c_flt
+x = 5 % 1.7 	// i_cnt % f_cnt (4
 
-x = 1.7 % 5		// f_cnt % i_cnt
+x = 1.7 % 5		// f_cnt % i_cnt (5
 
-x = c % a 		// int % flt
+x = c % a 		// i_val % f_val (6
 
-x = a % c 		// flt % int
+x = a % c 		// f_val % i_val (7
 
-x = 5 % b		// c_int % flt
+x = 5 % b		// i_cnt % f_val (8
 
-x = b % 5		// flt % c_int
+x = b % 5		// f_val % i_cnt (9
 
-x = 12 % 7		// i_cnt % i_cnt
+x = 12 % 7		// i_cnt % i_cnt (10
 
-x = c % 7		// i_val % i_cnt
+x = c % 7		// i_val % i_cnt (11
 
-x = 7 % c + 7	// i_cnt % i_val
+x = 7 % c + 7	// i_cnt % i_val (12
+
+
+x = c*3 + d % 3
