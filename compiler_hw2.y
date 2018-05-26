@@ -19,6 +19,7 @@ char mStr[87];
 int printErrflag = 0;
 int initflag = 0;
 int isflt = 0;
+int declaredtwice = 0;
 
 int ScopeDepth = 0;
 int MaxScopeDepth = 0;
@@ -44,6 +45,8 @@ typedef struct scope
 
 	symbol_table *inScope_head;
 	symbol_table *inScope_list;
+
+	int scopeindex;
 }scope;
 
 int scopeindex = 0;
@@ -321,11 +324,11 @@ void IAlwaysInit()
 	Scope -> inScope_list = malloc(sizeof(symbol_table));
 
 	Scope -> inScope_head = Scope->inScope_list;
+	Scope -> scopeindex = scopeindex;
 	MasterScope = Scope;
+	MasterScope->mother = malloc(sizeof(scope));
 
 	scopelist[0] = Scope;
-
-	printf("All mother%p\n", MasterScope);
 }
 
 void scopefunc(char m)
@@ -353,6 +356,7 @@ void scopefunc(char m)
 
 		scopeindex ++; // 每個scope都有自己的 index
 		scopelist[scopeindex] = Scope; 
+		Scope -> scopeindex = scopeindex;
 
 		l = 1;
 	}
@@ -393,6 +397,14 @@ void create_symbol()
 
 void insert_symbol() 
 {
+	declaredtwice = 0;
+
+	if(lookup_symbol(lockedID) && declaredtwice == 0)
+	{
+		printf(ANSI_COLOR_RED   "<ERROR> re-declaration for variable %s (line %d)\n"    ANSI_COLOR_RESET, lockedID, yylineno);
+		return;
+	}
+
 	printf("Insert a symbol: %s\n", lockedID);
 
 	Scope -> inScope_list -> ScopeDepth = ScopeDepth;
@@ -414,7 +426,26 @@ void insert_symbol()
 
 symbol_table *lookup_symbol(char const *Look_ID) // 只搜尋自己的Scope 找不到再找 mother
 {
-			
+	scope *tmp = Scope;
+
+	while(tmp -> mother != NULL)
+	{
+		symbol_table *ttmp  = tmp -> inScope_head;
+		
+		while(ttmp -> next != NULL)
+		{
+			if(strcmp(ttmp->mID, Look_ID) == 0)
+			{
+				return ttmp;
+			}
+			ttmp = ttmp -> next;
+		}
+
+		declaredtwice++;
+		tmp = tmp -> mother;
+	}
+
+	return NULL;
 }
 
 void dump_symbol()
