@@ -30,6 +30,8 @@ int r = 0;
 typedef struct symbol_table
 {
 		int ScopeDepth;
+		int scopeindex;
+
         char mID[20];
         char mType[8];
         int I_data;
@@ -124,7 +126,15 @@ stmt
 	| comp 		
 	| expr
 	| print_func
-	| trap 		
+	| trap 
+;
+
+ForStmt : FOR '(' expr ')' comp expr comp  { printf("For"); }
+;
+
+IfStmt 
+	: IF expr
+	| IF '(' expr ')'
 ;
 
 dcl	: VAR lockedID type '=' CALC	{ create_symbol(); }
@@ -145,6 +155,7 @@ expr
 	|	lockedID Div_Assign CALC	{puts("Div Assign"); $$ = Func_Assign('/', $3);}
 	|	lockedID Mod_Assign CALC	{puts("Mod Assign"); $$ = Func_Assign('%', $3);}
 	|	IncDecStmt
+	|	trap
 ;
 
 print_func 
@@ -257,7 +268,12 @@ CALC
 ;
 
 lockedID 
-	: ID		{ char *p = strtok($1, "+-*/()=%><$!@#^& \t"); strcpy(lockedID, p);};
+	: ID		
+	{ 
+		char *p = strtok($1, "+-*/()=%><$!@#^& \t"); 
+		strcpy(lockedID, p);
+	}
+;
 
 STORE_ID
 	: ID		
@@ -266,6 +282,8 @@ STORE_ID
 		strcpy(mID, p); 
 
 		gbTmp = lookup_symbol(mID);
+		
+		printf("variable %s is depth %d\n", mID, gbTmp->ScopeDepth);
 
 		if(!gbTmp)
 		{
@@ -297,6 +315,8 @@ STORE_FLT
 
 trap 	: NEWLINE 	{ /* puts("NEWLINE"); */}
 	| Other 	{  /*puts("Other");*/  } 
+	| trap trap
+	|
 ;
 
 %%
@@ -307,7 +327,8 @@ int main(int argc, char** argv)
 	yyin = fopen(argv[1], "r");
 
 	yylineno = 0;
-	
+	IAlwaysInit();	
+
 	yyparse();
 	
 	printf("\nTotal line : %d\n", yylineno);
@@ -322,7 +343,7 @@ void IAlwaysInit()
 {
 	Scope = malloc(sizeof(scope));
 	Scope -> inScope_list = malloc(sizeof(symbol_table));
-
+	Scope -> inScope_list -> scopeindex = scopeindex;
 	Scope -> inScope_head = Scope->inScope_list;
 	Scope -> scopeindex = scopeindex;
 	MasterScope = Scope;
@@ -386,12 +407,10 @@ void scopefunc(char m)
 
 void create_symbol() 
 {	
-	if(!MasterScope)
-	{
+	if(initflag == 0){
 		puts("Create symbol table");
-		IAlwaysInit();
+		initflag = 1;
 	}
-
 	insert_symbol();
 }
 
@@ -408,6 +427,7 @@ void insert_symbol()
 	printf("Insert a symbol: %s\n", lockedID);
 
 	Scope -> inScope_list -> ScopeDepth = ScopeDepth;
+	Scope -> inScope_list -> scopeindex = scopeindex;
 	strcpy(Scope -> inScope_list -> mID, lockedID);
 	strcpy(Scope -> inScope_list -> mType, mType);
 
@@ -419,6 +439,8 @@ void insert_symbol()
 	{
 		Scope -> inScope_list ->F_data = F_data;
 	}
+
+	printf("declare %s in block of depth %d\n", lockedID, Scope-> inScope_list -> ScopeDepth);
 
 	Scope -> inScope_list -> next = malloc(sizeof(symbol_table));
 	Scope -> inScope_list = Scope-> inScope_list -> next;
@@ -450,9 +472,6 @@ symbol_table *lookup_symbol(char const *Look_ID) // 只搜尋自己的Scope 找�
 
 void dump_symbol()
 {
-	if(!MasterScope)
-		return;
-
 	puts("ID\tType\tData\tDepth");
 
 	scope *tmp = MasterScope;
