@@ -29,18 +29,18 @@ int r = 0;
 
 typedef struct symbol_table
 {
-		int ScopeDepth;
-		int scopeindex;
+	int ScopeDepth;
+	int scopeindex;
 
-        char mID[20];
-        char mType[8];
-        int I_data;
-        float F_data;
-        struct symbol_table *next;
+	char mID[20];
+	char mType[8];
+	int I_data;
+	float F_data;
+	struct symbol_table *next;
 
 }symbol_table;
 
-typedef struct scope
+typedef struct scope	// include symbol_table
 {
 	struct scope *child;
 	struct scope *mother;
@@ -51,23 +51,24 @@ typedef struct scope
 	int scopeindex;
 }scope;
 
-int scopeindex = 0;
-scope *scopelist[256];
+int scopeindex = 0;		// 每個scope有自己的標籤
+scope *scopelist[256];	// 在 dump 時使用, print所有的variable
 
 /* Symbol table function - you can add new function if need. */
-symbol_table *lookup_symbol(char const *);
-void create_symbol();
-void insert_symbol();
-void dump_symbol();
-void IAlwaysInit();
-void scopefunc(char);
-float Func_Assign(char, float);
-float IncDecFunc(char);
-void printfunc(float);
+symbol_table *lookup_symbol(char const *); // 搜尋 symbol_table, return NULL 或一個 symbol_table
+void create_symbol();			// 初始化 - print "Create symbol table", 之後都交給 insert_symbol
+void insert_symbol();			// 對每個Scope的symbol_table做賦值
+void dump_symbol();				// 印出所有的變數資訊
+void IAlwaysInit();				// 避免 Core dump 在 main() 直接做初始化
+void scopefunc(char);			// 處理 '{' 和 '}'
+float Func_Assign(char, float);	// 處理 Assign Op
+float IncDecFunc(char);			// 處理 ++ 和 --
+
+// 必要的函式 
 void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
 
-symbol_table *gbTmp;
-scope *Scope, *MasterScope;
+symbol_table *gbTmp;	// 用於 symboltable 的暫存
+scope *Scope, *MasterScope; //Scope 會一直變, MasterScope 作為所有 Scope 的祖先
 
 %}
 
