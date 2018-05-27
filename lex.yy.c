@@ -1117,7 +1117,7 @@ case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
 #line 103 "compiler_hw2.l"
-{ return NEWLINE;}
+{ return NEWLINE; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
@@ -1128,7 +1128,7 @@ case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
 #line 105 "compiler_hw2.l"
-{ return Other; } /* Ignore other charactor sets */
+{ /*return Other; */} /* Ignore other charactor sets */
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):

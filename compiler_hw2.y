@@ -126,15 +126,19 @@ stmt
 	| comp 		
 	| expr
 	| print_func
-	| trap 
+	| ForStmt
+	| IfStmt
+	| trap
 ;
 
-ForStmt : FOR '(' expr ')' comp expr comp  { printf("For"); }
+ForStmt : FOR '(' expr ')' stmt { printf("For Stmt"); }
 ;
 
 IfStmt 
-	: IF expr
-	| IF '(' expr ')'
+	: IF expr stmt{ printf("If Stmt\n"); }
+	| IF '(' expr ')' stmt{ printf("If Stmt\n"); }
+	| ELSE IF { puts("Else If Stmt"); }
+	| ELSE	{ puts("Else Stmt"); }
 ;
 
 dcl	: VAR lockedID type '=' CALC	{ create_symbol(); }
@@ -155,7 +159,6 @@ expr
 	|	lockedID Div_Assign CALC	{puts("Div Assign"); $$ = Func_Assign('/', $3);}
 	|	lockedID Mod_Assign CALC	{puts("Mod Assign"); $$ = Func_Assign('%', $3);}
 	|	IncDecStmt
-	|	trap
 ;
 
 print_func 
@@ -283,14 +286,13 @@ STORE_ID
 
 		gbTmp = lookup_symbol(mID);
 		
-		printf("variable %s is depth %d\n", mID, gbTmp->ScopeDepth);
-
 		if(!gbTmp)
 		{
 			printf(ANSI_COLOR_RED   "<ERROR> can't find variable %s (line %d)\n"    ANSI_COLOR_RESET, mID, yylineno);
 		}
 		else
 		{
+			printf("variable %s is depth %d\n", mID, gbTmp->ScopeDepth);
 			if(gbTmp->mType[0] == 'i')
 			{
 				$$ = (float)gbTmp->I_data;
@@ -313,10 +315,10 @@ STORE_INT
 STORE_FLT
 	: F_CONST	{ $$ = $1; F_data = $1;};
 
-trap 	: NEWLINE 	{ /* puts("NEWLINE"); */}
+trap 	
+	: NEWLINE 	{ /* puts("NEWLINE"); */}
 	| Other 	{  /*puts("Other");*/  } 
 	| trap trap
-	|
 ;
 
 %%
@@ -355,8 +357,8 @@ void IAlwaysInit()
 void scopefunc(char m)
 {
 	/*
-		每個Scope有自己的Symbol Table -> 所以每當遇到左括號, 就要清空一次 Symbol Table ？ 或是 new
-		應該要直接使用scope裡面的inScope_talbe, inScope_head 才對.
+		每個Scope有自己的Symbol Table
+		應該要直接使用scope裡面的inScope_table, inScope_head 才對.
 		如果在自己的Symbol Table找不到變數 -> 則尋找Mother.
 	*/
 	scope *mother;
@@ -495,27 +497,6 @@ void dump_symbol()
              ttmp = ttmp -> next;
 		}
 	}
-/*
-	while(tmp -> child != NULL)
-	{
-		symbol_table *ttmp = tmp -> inScope_head;
-
-		while(ttmp -> next != NULL)
-		{
-			if(ttmp -> mType[0] == 'i')
-			{
-				printf("%s\t%s\t%d\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->I_data, ttmp->ScopeDepth); 
-			}
-			else if(ttmp -> mType[0] == 'f')
-			{
-				printf("%s\t%s\t%g\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->F_data, ttmp->ScopeDepth);
-			}
-			ttmp = ttmp -> next;
-		}
-
-		tmp = tmp -> child;
-	}
-*/
 }
 
 float Func_Assign(char m, float flt)

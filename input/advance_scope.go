@@ -8,6 +8,10 @@ var x int = 10
 	var x int = 5
 	x++
 	println(x)
+	{
+		var x int = 3
+		x++
+	}
 }
 
 println(x)
@@ -15,6 +19,13 @@ println(x)
 {
 	x++
 	println(x)
+	{
+		var x int = 17
+		{
+			var x float32 = 87.87
+			x++
+		}
+	}
 }
 
 println(x)
