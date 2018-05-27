@@ -102,7 +102,7 @@ id			{letter}+({letter}|{digit})*
 
 [\n]	{ return NEWLINE; }
 [ \t]		 /* Ignore */
-[^; \t] 	 { /*return Other; */} /* Ignore other charactor sets */
+[^; \t] 	 { return Other; } /* Ignore other charactor sets */
 <<EOF>>    { return 0; } 
 
 %%

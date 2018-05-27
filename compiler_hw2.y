@@ -311,10 +311,10 @@ STORE_STR
 	: STRING	{ strcpy(mStr, $1); };
 
 STORE_INT
-	: I_CONST	{ $$ = (float)$1; I_data = $1;};
+	: I_CONST	{ $$ = (float)$1; I_data = $1; F_data = (float)$1;};
 
 STORE_FLT
-	: F_CONST	{ $$ = $1; F_data = $1;};
+	: F_CONST	{ $$ = $1; F_data = $1; I_data = (int)$1;};
 
 trap 	
 	: NEWLINE 	{ /* puts("NEWLINE"); */}

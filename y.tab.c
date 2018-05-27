@@ -1870,13 +1870,13 @@ yyreduce:
 
   case 71:
 #line 314 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (float)(yyvsp[0].i_val); I_data = (yyvsp[0].i_val);}
+    { (yyval.f_val) = (float)(yyvsp[0].i_val); I_data = (yyvsp[0].i_val); F_data = (float)(yyvsp[0].i_val);}
 #line 1875 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
 #line 317 "compiler_hw2.y" /* yacc.c:1646  */
-    { (yyval.f_val) = (yyvsp[0].f_val); F_data = (yyvsp[0].f_val);}
+    { (yyval.f_val) = (yyvsp[0].f_val); F_data = (yyvsp[0].f_val); I_data = (int)(yyvsp[0].f_val);}
 #line 1881 "y.tab.c" /* yacc.c:1646  */
     break;
 
