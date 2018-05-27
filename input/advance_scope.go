@@ -21,15 +21,18 @@ println(x)
 	println(x)
 	{
 		var x int = 17
+		var b float32 = 21.21
+
+		x += b + 17.17
+		b += x + 26.56
+	
 		{
 			var x float32 = 87.87
 			x++
-			println(x + 7)
+			println(x /= 7)
 		}
 	}
 }
-
-var x int = 17
 
 println(x)
 

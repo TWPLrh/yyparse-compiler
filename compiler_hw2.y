@@ -296,12 +296,12 @@ STORE_ID
 			printf("variable %s is depth %d\n", mID, gbTmp->ScopeDepth);
 			if(gbTmp->mType[0] == 'i')
 			{
-				$$ = (float)gbTmp->I_data;
+				$$ = (float)gbTmp->I_data; I_data = (int)$$, F_data = $$;
 			}
 			else if(gbTmp->mType[0] == 'f')
 			{
 				isflt = 1;
-				$$ = gbTmp->F_data;
+				$$ = gbTmp->F_data;; I_data = (int)$$, F_data = $$;
 			}
 		}
 	}
