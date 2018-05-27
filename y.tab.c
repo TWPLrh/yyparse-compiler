@@ -83,10 +83,8 @@ int printErrflag = 0;
 int initflag = 0;
 int isflt = 0;
 int declaredtwice = 0;
-
 int ScopeDepth = 0;
 int MaxScopeDepth = 0;
-
 int l = 0;
 int r = 0;
 
@@ -117,6 +115,8 @@ typedef struct scope	// include symbol_table
 int scopeindex = 0;		// 每個scope有自己的標籤
 scope *scopelist[256];	// 在 dump 時使用, print所有的variable
 
+int IFIF = 0;
+
 /* Symbol table function - you can add new function if need. */
 symbol_table *lookup_symbol(char const *); // 搜尋 symbol_table, return NULL 或一個 symbol_table
 void create_symbol();			// 初始化 - print "Create symbol table", 之後都交給 insert_symbol
@@ -128,7 +128,7 @@ float Func_Assign(char, float);	// 處理 Assign Op
 float IncDecFunc(char);			// 處理 ++ 和 --
 
 // 必要的函式 
-void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
+void yyerror(char const *s) { fprintf(stderr, ANSI_COLOR_RED	"Error : %s\n"	ANSI_COLOR_RESET, s); }
 
 symbol_table *gbTmp;	// 用於 symboltable 的暫存
 scope *Scope, *MasterScope; //Scope 會一直變, MasterScope 作為所有 Scope 的祖先
@@ -1444,19 +1444,19 @@ yyreduce:
     {
         case 11:
 #line 135 "compiler_hw2.y" /* yacc.c:1646  */
-    { printf("For Stmt"); }
+    { printf("For Stmt");}
 #line 1449 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
 #line 139 "compiler_hw2.y" /* yacc.c:1646  */
-    { printf("If Stmt\n"); }
+    { printf("If Stmt\n"); IFIF ++; }
 #line 1455 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
 #line 140 "compiler_hw2.y" /* yacc.c:1646  */
-    { printf("If Stmt\n"); }
+    { printf("If Stmt\n"); IFIF ++;}
 #line 1461 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1468,7 +1468,7 @@ yyreduce:
 
   case 15:
 #line 142 "compiler_hw2.y" /* yacc.c:1646  */
-    { puts("Else Stmt"); }
+    { puts("Else Stmt"); IFIF--; if(IFIF < 0) yyerror("ELSE syntax error"); }
 #line 1473 "y.tab.c" /* yacc.c:1646  */
     break;
 

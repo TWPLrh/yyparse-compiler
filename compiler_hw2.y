@@ -20,10 +20,8 @@ int printErrflag = 0;
 int initflag = 0;
 int isflt = 0;
 int declaredtwice = 0;
-
 int ScopeDepth = 0;
 int MaxScopeDepth = 0;
-
 int l = 0;
 int r = 0;
 
@@ -54,6 +52,8 @@ typedef struct scope	// include symbol_table
 int scopeindex = 0;		// 每個scope有自己的標籤
 scope *scopelist[256];	// 在 dump 時使用, print所有的variable
 
+int IFIF = 0;
+
 /* Symbol table function - you can add new function if need. */
 symbol_table *lookup_symbol(char const *); // 搜尋 symbol_table, return NULL 或一個 symbol_table
 void create_symbol();			// 初始化 - print "Create symbol table", 之後都交給 insert_symbol
@@ -65,7 +65,7 @@ float Func_Assign(char, float);	// 處理 Assign Op
 float IncDecFunc(char);			// 處理 ++ 和 --
 
 // 必要的函式 
-void yyerror(char const *s) { fprintf(stderr, "Error : %s\n", s); }
+void yyerror(char const *s) { fprintf(stderr, ANSI_COLOR_RED	"Error : %s\n"	ANSI_COLOR_RESET, s); }
 
 symbol_table *gbTmp;	// 用於 symboltable 的暫存
 scope *Scope, *MasterScope; //Scope 會一直變, MasterScope 作為所有 Scope 的祖先
@@ -132,14 +132,14 @@ stmt
 	| trap
 ;
 
-ForStmt : FOR '(' expr ')' stmt { printf("For Stmt"); }
+ForStmt : FOR '(' expr ')' stmt { printf("For Stmt");}
 ;
 
 IfStmt 
-	: IF expr stmt{ printf("If Stmt\n"); }
-	| IF '(' expr ')' stmt{ printf("If Stmt\n"); }
+	: IF expr stmt{ printf("If Stmt\n"); IFIF ++; }
+	| IF '(' expr ')' stmt{ printf("If Stmt\n"); IFIF ++;}
 	| ELSE IF { puts("Else If Stmt"); }
-	| ELSE	{ puts("Else Stmt"); }
+	| ELSE	{ puts("Else Stmt"); IFIF--; if(IFIF < 0) yyerror("ELSE syntax error"); }
 ;
 
 dcl	: VAR lockedID type '=' CALC	{ create_symbol(); }
