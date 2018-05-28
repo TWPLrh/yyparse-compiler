@@ -50,29 +50,30 @@ extern int yydebug;
     IF = 260,
     ELSE = 261,
     FOR = 262,
-    VAR = 263,
-    NEWLINE = 264,
-    INT = 265,
-    FLOAT = 266,
-    VOID = 267,
-    INCREMENT = 268,
-    DECREMENT = 269,
-    Add_Assign = 270,
-    Sub_Assign = 271,
-    Mul_Assign = 272,
-    Div_Assign = 273,
-    Mod_Assign = 274,
-    GRE = 275,
-    LSE = 276,
-    EQU = 277,
-    NEQ = 278,
-    AND = 279,
-    OR = 280,
-    Other = 281,
-    I_CONST = 282,
-    F_CONST = 283,
-    STRING = 284,
-    ID = 285
+    ELIF = 263,
+    VAR = 264,
+    NEWLINE = 265,
+    INT = 266,
+    FLOAT = 267,
+    VOID = 268,
+    INCREMENT = 269,
+    DECREMENT = 270,
+    Add_Assign = 271,
+    Sub_Assign = 272,
+    Mul_Assign = 273,
+    Div_Assign = 274,
+    Mod_Assign = 275,
+    GRE = 276,
+    LSE = 277,
+    EQU = 278,
+    NEQ = 279,
+    AND = 280,
+    OR = 281,
+    Other = 282,
+    I_CONST = 283,
+    F_CONST = 284,
+    STRING = 285,
+    ID = 286
   };
 #endif
 /* Tokens.  */
@@ -81,42 +82,43 @@ extern int yydebug;
 #define IF 260
 #define ELSE 261
 #define FOR 262
-#define VAR 263
-#define NEWLINE 264
-#define INT 265
-#define FLOAT 266
-#define VOID 267
-#define INCREMENT 268
-#define DECREMENT 269
-#define Add_Assign 270
-#define Sub_Assign 271
-#define Mul_Assign 272
-#define Div_Assign 273
-#define Mod_Assign 274
-#define GRE 275
-#define LSE 276
-#define EQU 277
-#define NEQ 278
-#define AND 279
-#define OR 280
-#define Other 281
-#define I_CONST 282
-#define F_CONST 283
-#define STRING 284
-#define ID 285
+#define ELIF 263
+#define VAR 264
+#define NEWLINE 265
+#define INT 266
+#define FLOAT 267
+#define VOID 268
+#define INCREMENT 269
+#define DECREMENT 270
+#define Add_Assign 271
+#define Sub_Assign 272
+#define Mul_Assign 273
+#define Div_Assign 274
+#define Mod_Assign 275
+#define GRE 276
+#define LSE 277
+#define EQU 278
+#define NEQ 279
+#define AND 280
+#define OR 281
+#define Other 282
+#define I_CONST 283
+#define F_CONST 284
+#define STRING 285
+#define ID 286
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 76 "compiler_hw2.y" /* yacc.c:1909  */
+#line 75 "compiler_hw2.y" /* yacc.c:1909  */
 
 	int i_val;
 	double f_val;
 	char* string;
 
-#line 120 "y.tab.h" /* yacc.c:1909  */
+#line 122 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

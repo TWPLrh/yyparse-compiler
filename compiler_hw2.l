@@ -16,6 +16,7 @@ letter		[a-zA-Z]
 integer     {digit}+
 double      {digit}+"."{digit}+
 id			{letter}+({letter}|{digit})*
+elif		"else if"
 
 %option yylineno
 
@@ -68,6 +69,7 @@ id			{letter}+({letter}|{digit})*
  /* Condition and Loop Keywords */
 "if"		{ return IF; }
 "else"		{ return ELSE; }
+{elif}		{ return ELIF;}
 "for"		{ return FOR; }
 
  /* Declaration Keywords */

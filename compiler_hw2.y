@@ -47,12 +47,11 @@ typedef struct scope	// include symbol_table
 	symbol_table *inScope_list;
 
 	int scopeindex;
+	int IFIF;
 }scope;
 
 int scopeindex = 0;		// 每個scope有自己的標籤
 scope *scopelist[256];	// 在 dump 時使用, print所有的variable
-
-int IFIF = 0;
 
 /* Symbol table function - you can add new function if need. */
 symbol_table *lookup_symbol(char const *); // 搜尋 symbol_table, return NULL 或一個 symbol_table
@@ -83,7 +82,7 @@ scope *Scope, *MasterScope; //Scope 會一直變, MasterScope 作為所有 Scope
 
 /* Token without return NEED RETURN ! BUT NO TYPE*/
 %token PRINT PRINTLN 
-%token IF ELSE FOR
+%token IF ELSE FOR ELIF
 %token VAR NEWLINE
 %token INT FLOAT VOID
 %token INCREMENT DECREMENT 
@@ -136,10 +135,10 @@ ForStmt : FOR '(' expr ')' stmt { printf("For Stmt");}
 ;
 
 IfStmt 
-	: IF expr stmt{ printf("If Stmt\n"); IFIF ++; }
-	| IF '(' expr ')' stmt{ printf("If Stmt\n"); IFIF ++;}
-	| ELSE IF { puts("Else If Stmt"); }
-	| ELSE	{ puts("Else Stmt"); IFIF--; if(IFIF < 0) yyerror("ELSE syntax error"); }
+	: IF expr stmt{ printf("If Stmt\n"); Scope -> mother -> IFIF ++; }
+	| IF '(' expr ')' stmt{ printf("If Stmt\n"); Scope -> mother -> IFIF ++;}
+	| ELIF stmt { puts("Else If Stmt"); }
+	| ELSE stmt	{ puts("Else Stmt"); Scope -> mother -> IFIF--; if(Scope -> mother -> IFIF < 0) yyerror("ELSE syntax error"); }
 ;
 
 dcl	: VAR lockedID type '=' CALC	{ create_symbol(); }
