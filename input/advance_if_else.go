@@ -11,7 +11,17 @@ if (x < 10) {
 } else if(x == 10) {
     x--
 } else if(x == 9) {
+	if (x > 1){
+
+	}
+
+	else if( x== 10){
+
+	}
+
+	else{
     x = 20
+	}
 } else {
     x = 0
 }

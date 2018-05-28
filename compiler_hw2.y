@@ -137,8 +137,8 @@ ForStmt : FOR '(' expr ')' stmt { printf("For Stmt");}
 IfStmt 
 	: IF expr stmt{ printf("If Stmt\n"); Scope -> mother -> IFIF ++; }
 	| IF '(' expr ')' stmt { printf("If Stmt\n"); Scope -> mother -> IFIF ++; }
-	| ELIF expr stmt	{ puts("Else If Stmt"); if(Scope -> mother -> IFIF == 0){ yyerror("<ELSE IF> used without <IF>");} }
-	| ELIF '(' expr ')' stmt { puts("Else If Stmt"); if(Scope -> mother -> IFIF == 0){ yyerror("<ELSE IF> used without <IF>");} }
+	| ELIF expr stmt	{ puts("Else If Stmt"); if(Scope -> mother -> IFIF <= 0){ yyerror("<ELSE IF> used without <IF>");} }
+	| ELIF '(' expr ')' stmt { puts("Else If Stmt"); if(Scope -> mother -> IFIF <= 0){ yyerror("<ELSE IF> used without <IF>");} }
 	| ELSE stmt	{ puts("Else Stmt"); Scope -> mother -> IFIF--; if(Scope -> mother -> IFIF < 0){ yyerror("<ELSE> used without <IF> or <ELSE> used twice ");} }
 ;
 

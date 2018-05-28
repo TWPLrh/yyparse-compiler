@@ -1474,13 +1474,13 @@ yyreduce:
 
   case 14:
 #line 140 "compiler_hw2.y" /* yacc.c:1646  */
-    { puts("Else If Stmt"); if(Scope -> mother -> IFIF == 0){ yyerror("<ELSE IF> used without <IF>");} }
+    { puts("Else If Stmt"); if(Scope -> mother -> IFIF <= 0){ yyerror("<ELSE IF> used without <IF>");} }
 #line 1479 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
 #line 141 "compiler_hw2.y" /* yacc.c:1646  */
-    { puts("Else If Stmt"); if(Scope -> mother -> IFIF == 0){ yyerror("<ELSE IF> used without <IF>");} }
+    { puts("Else If Stmt"); if(Scope -> mother -> IFIF <= 0){ yyerror("<ELSE IF> used without <IF>");} }
 #line 1485 "y.tab.c" /* yacc.c:1646  */
     break;
 
