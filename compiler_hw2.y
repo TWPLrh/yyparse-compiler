@@ -141,8 +141,8 @@ IfStmt
 	| ELSE stmt	{ puts("Else Stmt"); Scope -> mother -> IFIF--; if(Scope -> mother -> IFIF < 0) yyerror("ELSE syntax error"); }
 ;
 
-dcl	: VAR lockedID type '=' CALC	{ create_symbol(); }
-	| VAR lockedID type		{ create_symbol(); }
+dcl	: VAR lockedID type '=' CALC	{ I_data = (int)$5; F_data = $5; create_symbol(); }
+	| VAR lockedID type		{ I_data = 0; F_data = 0; create_symbol(); }
 ;
 
 comp	
@@ -151,7 +151,7 @@ comp
 ;
 
 expr	
-	:	CALC						
+	:	CALC
 	|	lockedID '=' CALC 			{puts("ASSIGN"); $$ = Func_Assign('=', $3);}
 	|	lockedID Add_Assign CALC	{puts("Add Assign"); $$ = Func_Assign('+', $3);}
 	|	lockedID Sub_Assign CALC	{puts("Sub Assign"); $$ = Func_Assign('-', $3);}
@@ -182,14 +182,13 @@ IncDecStmt
 	|	STORE_ID  { $$ = $1; }
 ;
 
-CALC	
+CALC
 	: CALC '+' CALC	{ puts("Add");  $$ = $1 + $3;}
 	| CALC '-' CALC	{ puts("Sub");  $$ = $1 - $3;}
 	| CALC '*' CALC	{ puts("Mul");  $$ = $1 * $3;}
 	| CALC '/' CALC	{ if($3 == 0) { printErrflag = 1; printf(ANSI_COLOR_RED   "<ERROR> The divisor can’t be 0 (line %d)\n"    ANSI_COLOR_RESET, yylineno);} else { puts("Div"); $$ = $1 / $3;} }
 	| CALC '%' CALC { $$ = (int)$1 % (int)$3;}
 	| CALC CALC { printf(ANSI_COLOR_RED   "<ERROR> Syntax Error (line %d)\n"    ANSI_COLOR_RESET, yylineno); return 0; }
-
 	| STORE_ID '%' CALC 
 	{ 
 		if ( isflt == 1 )
@@ -477,6 +476,7 @@ void dump_symbol()
 	puts("ID\tType\tData\tDepth");
 
 	scope *tmp = MasterScope;
+	symbol_table *previous;
 
 	int i = 0;
 
@@ -486,16 +486,21 @@ void dump_symbol()
 
 		while(ttmp -> next != NULL)
 		{
-             if(ttmp -> mType[0] == 'i')
-             {
-                 printf("%s\t%s\t%d\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->I_data, ttmp->ScopeDepth); 
-             }
-             else if(ttmp -> mType[0] == 'f')
-             {
-                 printf("%s\t%s\t%g\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->F_data, ttmp->ScopeDepth);
-             }
-             ttmp = ttmp -> next;
+            if(ttmp -> mType[0] == 'i')
+            {
+                printf("%s\t%s\t%d\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->I_data, ttmp->ScopeDepth); 
+            }
+            else if(ttmp -> mType[0] == 'f')
+            {
+                printf("%s\t%s\t%g\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->F_data, ttmp->ScopeDepth);
+            }
+			previous = ttmp;
+            ttmp = ttmp -> next;
+
+			free(previous);
 		}
+
+		free(scopelist[i]);
 	}
 }
 

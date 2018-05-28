@@ -562,10 +562,10 @@ static const yytype_uint16 yyrline[] =
      131,   134,   138,   139,   140,   141,   144,   145,   149,   150,
      154,   155,   156,   157,   158,   159,   160,   161,   165,   166,
      167,   168,   172,   173,   174,   178,   179,   180,   181,   182,
-     186,   187,   188,   189,   190,   191,   193,   208,   223,   238,
-     253,   254,   255,   256,   257,   258,   259,   260,   261,   262,
-     263,   264,   265,   266,   267,   268,   269,   270,   274,   282,
-     310,   313,   316,   319,   320,   321
+     186,   187,   188,   189,   190,   191,   192,   207,   222,   237,
+     252,   253,   254,   255,   256,   257,   258,   259,   260,   261,
+     262,   263,   264,   265,   266,   267,   268,   269,   273,   281,
+     309,   312,   315,   318,   319,   320
 };
 #endif
 
@@ -1477,13 +1477,13 @@ yyreduce:
 
   case 16:
 #line 144 "compiler_hw2.y" /* yacc.c:1646  */
-    { create_symbol(); }
+    { I_data = (int)(yyvsp[0].f_val); F_data = (yyvsp[0].f_val); create_symbol(); }
 #line 1482 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
 #line 145 "compiler_hw2.y" /* yacc.c:1646  */
-    { create_symbol(); }
+    { I_data = 0; F_data = 0; create_symbol(); }
 #line 1488 "y.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1644,7 +1644,7 @@ yyreduce:
     break;
 
   case 46:
-#line 194 "compiler_hw2.y" /* yacc.c:1646  */
+#line 193 "compiler_hw2.y" /* yacc.c:1646  */
     { 
 		if ( isflt == 1 )
 		{
@@ -1663,7 +1663,7 @@ yyreduce:
     break;
 
   case 47:
-#line 209 "compiler_hw2.y" /* yacc.c:1646  */
+#line 208 "compiler_hw2.y" /* yacc.c:1646  */
     { 
         if ( isflt == 1 ) 
         {   
@@ -1682,7 +1682,7 @@ yyreduce:
     break;
 
   case 48:
-#line 224 "compiler_hw2.y" /* yacc.c:1646  */
+#line 223 "compiler_hw2.y" /* yacc.c:1646  */
     {
         if ( isflt == 1 ) 
         {   
@@ -1701,7 +1701,7 @@ yyreduce:
     break;
 
   case 49:
-#line 239 "compiler_hw2.y" /* yacc.c:1646  */
+#line 238 "compiler_hw2.y" /* yacc.c:1646  */
     {
         if ( isflt == 1 ) 
         {   
@@ -1720,115 +1720,115 @@ yyreduce:
     break;
 
   case 50:
-#line 253 "compiler_hw2.y" /* yacc.c:1646  */
+#line 252 "compiler_hw2.y" /* yacc.c:1646  */
     { puts("Mod"); (yyval.f_val) = (int)(yyvsp[-2].f_val) % (int)(yyvsp[0].f_val); }
 #line 1726 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 254 "compiler_hw2.y" /* yacc.c:1646  */
+#line 253 "compiler_hw2.y" /* yacc.c:1646  */
     { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); (yyval.f_val) = 0; }
 #line 1732 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 255 "compiler_hw2.y" /* yacc.c:1646  */
+#line 254 "compiler_hw2.y" /* yacc.c:1646  */
     { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); (yyval.f_val) = 0; }
 #line 1738 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 256 "compiler_hw2.y" /* yacc.c:1646  */
+#line 255 "compiler_hw2.y" /* yacc.c:1646  */
     { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno+1); (yyval.f_val) = 0;}
 #line 1744 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 257 "compiler_hw2.y" /* yacc.c:1646  */
+#line 256 "compiler_hw2.y" /* yacc.c:1646  */
     { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); (yyval.f_val) = 0;}
 #line 1750 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 258 "compiler_hw2.y" /* yacc.c:1646  */
+#line 257 "compiler_hw2.y" /* yacc.c:1646  */
     { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); (yyval.f_val) = 0;}
 #line 1756 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 259 "compiler_hw2.y" /* yacc.c:1646  */
+#line 258 "compiler_hw2.y" /* yacc.c:1646  */
     { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); (yyval.f_val) = 0;}
 #line 1762 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 260 "compiler_hw2.y" /* yacc.c:1646  */
+#line 259 "compiler_hw2.y" /* yacc.c:1646  */
     { printf(ANSI_COLOR_RED   "<ERROR> float type can't MOD (line %d)\n"    ANSI_COLOR_RESET, yylineno); (yyval.f_val) = 0;}
 #line 1768 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 261 "compiler_hw2.y" /* yacc.c:1646  */
+#line 260 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-1].f_val); }
 #line 1774 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 262 "compiler_hw2.y" /* yacc.c:1646  */
+#line 261 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[0].f_val); }
 #line 1780 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 263 "compiler_hw2.y" /* yacc.c:1646  */
+#line 262 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[0].f_val);}
 #line 1786 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 264 "compiler_hw2.y" /* yacc.c:1646  */
+#line 263 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[0].f_val);}
 #line 1792 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 265 "compiler_hw2.y" /* yacc.c:1646  */
+#line 264 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-2].f_val) > (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1798 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 266 "compiler_hw2.y" /* yacc.c:1646  */
+#line 265 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-2].f_val) < (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1804 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 267 "compiler_hw2.y" /* yacc.c:1646  */
+#line 266 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-2].f_val) == (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1810 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 268 "compiler_hw2.y" /* yacc.c:1646  */
+#line 267 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-2].f_val) >= (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1816 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 269 "compiler_hw2.y" /* yacc.c:1646  */
+#line 268 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-2].f_val) <= (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1822 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 270 "compiler_hw2.y" /* yacc.c:1646  */
+#line 269 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[-2].f_val) != (yyvsp[0].f_val); if((yyval.f_val) == 1) puts("True"); else puts("False");}
 #line 1828 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 275 "compiler_hw2.y" /* yacc.c:1646  */
+#line 274 "compiler_hw2.y" /* yacc.c:1646  */
     { 
 		char *p = strtok((yyvsp[0].string), "+-*/()=%><$!@#^& \t"); 
 		strcpy(lockedID, p);
@@ -1837,7 +1837,7 @@ yyreduce:
     break;
 
   case 69:
-#line 283 "compiler_hw2.y" /* yacc.c:1646  */
+#line 282 "compiler_hw2.y" /* yacc.c:1646  */
     {
 		char *p = strtok((yyvsp[0].string), "+-*/()=%><$!@#^& \t");
 		strcpy(mID, p); 
@@ -1866,31 +1866,31 @@ yyreduce:
     break;
 
   case 70:
-#line 310 "compiler_hw2.y" /* yacc.c:1646  */
+#line 309 "compiler_hw2.y" /* yacc.c:1646  */
     { strcpy(mStr, (yyvsp[0].string)); }
 #line 1872 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 313 "compiler_hw2.y" /* yacc.c:1646  */
+#line 312 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (float)(yyvsp[0].i_val); I_data = (yyvsp[0].i_val); F_data = (float)(yyvsp[0].i_val);}
 #line 1878 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 316 "compiler_hw2.y" /* yacc.c:1646  */
+#line 315 "compiler_hw2.y" /* yacc.c:1646  */
     { (yyval.f_val) = (yyvsp[0].f_val); F_data = (yyvsp[0].f_val); I_data = (int)(yyvsp[0].f_val);}
 #line 1884 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 319 "compiler_hw2.y" /* yacc.c:1646  */
+#line 318 "compiler_hw2.y" /* yacc.c:1646  */
     { /* puts("NEWLINE"); */}
 #line 1890 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 320 "compiler_hw2.y" /* yacc.c:1646  */
+#line 319 "compiler_hw2.y" /* yacc.c:1646  */
     {  /*puts("Other");*/  }
 #line 1896 "y.tab.c" /* yacc.c:1646  */
     break;
@@ -2124,7 +2124,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 324 "compiler_hw2.y" /* yacc.c:1906  */
+#line 323 "compiler_hw2.y" /* yacc.c:1906  */
 
 
 /* C code section */
@@ -2281,6 +2281,7 @@ void dump_symbol()
 	puts("ID\tType\tData\tDepth");
 
 	scope *tmp = MasterScope;
+	symbol_table *previous;
 
 	int i = 0;
 
@@ -2290,16 +2291,21 @@ void dump_symbol()
 
 		while(ttmp -> next != NULL)
 		{
-             if(ttmp -> mType[0] == 'i')
-             {
-                 printf("%s\t%s\t%d\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->I_data, ttmp->ScopeDepth); 
-             }
-             else if(ttmp -> mType[0] == 'f')
-             {
-                 printf("%s\t%s\t%g\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->F_data, ttmp->ScopeDepth);
-             }
-             ttmp = ttmp -> next;
+            if(ttmp -> mType[0] == 'i')
+            {
+                printf("%s\t%s\t%d\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->I_data, ttmp->ScopeDepth); 
+            }
+            else if(ttmp -> mType[0] == 'f')
+            {
+                printf("%s\t%s\t%g\t%d\n", ttmp -> mID, ttmp -> mType, ttmp->F_data, ttmp->ScopeDepth);
+            }
+			previous = ttmp;
+            ttmp = ttmp -> next;
+
+			free(previous);
 		}
+
+		free(scopelist[i]);
 	}
 }
 
