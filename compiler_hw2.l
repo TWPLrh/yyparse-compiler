@@ -105,6 +105,7 @@ elif		"else if"
 [\n]	{ return NEWLINE; }
 [ \t]		 /* Ignore */
 [^; \t] 	 { return Other; } /* Ignore other charactor sets */
+";"			{return *yytext;}
 <<EOF>>    { return 0; } 
 
 %%

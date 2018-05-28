@@ -64,7 +64,7 @@ float Func_Assign(char, float);	// 處理 Assign Op
 float IncDecFunc(char);			// 處理 ++ 和 --
 
 // 必要的函式 
-void yyerror(char const *s) { fprintf(stderr, ANSI_COLOR_RED	"Error : %s\n"	ANSI_COLOR_RESET, s); }
+void yyerror(char const *s) { fprintf(stderr, ANSI_COLOR_RED	"Error : %s (line %d)\n"	ANSI_COLOR_RESET, s, yylineno); }
 
 symbol_table *gbTmp;	// 用於 symboltable 的暫存
 scope *Scope, *MasterScope; //Scope 會一直變, MasterScope 作為所有 Scope 的祖先
@@ -136,9 +136,10 @@ ForStmt : FOR '(' expr ')' stmt { printf("For Stmt");}
 
 IfStmt 
 	: IF expr stmt{ printf("If Stmt\n"); Scope -> mother -> IFIF ++; }
-	| IF '(' expr ')' stmt{ printf("If Stmt\n"); Scope -> mother -> IFIF ++;}
-	| ELIF stmt { puts("Else If Stmt"); }
-	| ELSE stmt	{ puts("Else Stmt"); Scope -> mother -> IFIF--; if(Scope -> mother -> IFIF < 0) yyerror("ELSE syntax error"); }
+	| IF '(' expr ')' stmt { printf("If Stmt\n"); Scope -> mother -> IFIF ++; }
+	| ELIF expr stmt	{ puts("Else If Stmt"); if(Scope -> mother -> IFIF == 0){ yyerror("<ELSE IF> used without <IF>");} }
+	| ELIF '(' expr ')' stmt { puts("Else If Stmt"); if(Scope -> mother -> IFIF == 0){ yyerror("<ELSE IF> used without <IF>");} }
+	| ELSE stmt	{ puts("Else Stmt"); Scope -> mother -> IFIF--; if(Scope -> mother -> IFIF < 0){ yyerror("<ELSE> used without <IF> or <ELSE> used twice ");} }
 ;
 
 dcl	: VAR lockedID type '=' CALC	{ I_data = (int)$5; F_data = $5; create_symbol(); }

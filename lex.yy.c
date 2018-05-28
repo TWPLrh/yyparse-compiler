@@ -394,8 +394,8 @@ static void yy_fatal_error (yyconst char msg[]  );
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
 
-#define YY_NUM_RULES 52
-#define YY_END_OF_BUFFER 53
+#define YY_NUM_RULES 53
+#define YY_END_OF_BUFFER 54
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -405,7 +405,7 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[93] =
     {   0,
-        0,    0,    0,    0,   39,   39,   53,   51,   50,   49,
+        0,    0,    0,    0,   39,   39,   54,   51,   50,   49,
        22,   37,    5,   51,   23,   24,    3,    1,    2,    4,
        40,   52,    9,   14,    8,   48,   48,   48,   48,   48,
        48,   25,   51,   26,   43,   44,   45,   39,   38,   13,
@@ -541,11 +541,11 @@ static yyconst flex_int16_t yy_chk[200] =
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static yyconst flex_int32_t yy_rule_can_match_eol[53] =
+static yyconst flex_int32_t yy_rule_can_match_eol[54] =
     {   0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
-    0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0,     };
+    0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0,     };
 
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
@@ -1137,18 +1137,23 @@ YY_RULE_SETUP
 #line 107 "compiler_hw2.l"
 { return Other; } /* Ignore other charactor sets */
 	YY_BREAK
+case 52:
+YY_RULE_SETUP
+#line 108 "compiler_hw2.l"
+{return *yytext;}
+	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 case YY_STATE_EOF(STRING_STATE):
-#line 108 "compiler_hw2.l"
+#line 109 "compiler_hw2.l"
 { return 0; } 
 	YY_BREAK
-case 52:
+case 53:
 YY_RULE_SETUP
-#line 110 "compiler_hw2.l"
+#line 111 "compiler_hw2.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1152 "lex.yy.c"
+#line 1157 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2159,7 +2164,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 110 "compiler_hw2.l"
+#line 111 "compiler_hw2.l"
 
 
 

@@ -9,4 +9,3 @@ b = 5 / a
 
 /* redefined variable */
 var a int = b + 1
-

@@ -1,5 +1,5 @@
 var x int = 10
-
+var c int = 1234.789 / 1234 + 1234 - 1234 * 20
 // print out variable (don't need to consider the expression)
 print(x)
 
