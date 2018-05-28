@@ -1,0 +1,62 @@
+
+/* ----------------------------------------------------------------------------- */
+Design the grammar for the case: “if … else if … else …”, the grammar must allow zero 
+or more occurrences of the “else if”. (15pt)
+
+說明：
+
+stmt 
+	: IfStmt
+	| ...
+;
+
+IfStmt 
+	: IF expr stmt{ printf("If Stmt\n"); Scope -> mother -> IFIF ++; }
+	| IF '(' expr ')' stmt { printf("If Stmt\n"); Scope -> mother -> IFIF ++; }
+	| ELIF expr stmt	{ puts("Else If Stmt"); if(Scope -> mother -> IFIF <= 0){ yyerror("<ELSE IF> used without <IF>");} }
+	| ELIF '(' expr ')' stmt { puts("Else If Stmt"); if(Scope -> mother -> IFIF <= 0){ yyerror("<ELSE IF> used without <IF>");} }
+	| ELSE stmt	{ puts("Else Stmt"); Scope -> mother -> IFIF--; if(Scope -> mother -> IFIF < 0){ yyerror("<ELSE> used without <IF> or <ELSE> used twice ");} }
+;
+
+ELIF 是在 .l 檔裡宣告 ELIF "else if"
+
+因為遇到 '{' 等於進入一個新的Scope，所以在mother的 IFIF +1(Scope的說明在下面) 
+如果 IFIF < 0，判斷 ELSE 在沒有IF的時候產生，或是 IF 有 2個以上的 ELSE，所以 Syntax Error
+如果 IFIF <= 0 ，判斷 ELSE IF 在 沒有 IF 時產生，造成 Syntax Error
+
+/* ----------------------------------------------------------------------------- */
+
+/* ----------------------------------------------------------------------------- */
+Implement the scoping check function in your parser. To get the full credits for this 
+feature, your parser is expected to correctly handle the scope of the variables defined 
+by the μGo language. (15pt)
+
+說明：
+
+宣告 symbol_table struct，裡面有
+	int ScopeDepth; // 宣告時 variables 的當前深度
+    int scopeindex; // 宣告時 variables 的當前index -> 但之後沒用到
+    char mID[20];	// ID
+    char mType[8];	// Type
+    int I_data;		// Int Data
+    float F_data;	// Float Data
+    struct symbol_table *next;
+
+
+宣告 scope struct，裡面有 	
+	struct scope *child;	
+	struct scope *mother;
+	symbol_table *inScope_head;
+	symbol_table *inScope_list;
+	int scopeindex;
+	
+宣告 Scope (會變) 和 MasterScope(Const Block 0)，
+宣告 global scopedepth, scopeindex
+
+如果遇到 '{' Scope 往下到 child  depth + 1 index + 1
+如果遇到 '}' Scope 往上到 mother depth - 1
+
+找變數有沒有被宣告過，直接對當前 Scope 的 inScope_list 做搜尋，如果在同一個 Scope 則 redeclared
+如果是在mother才被找到，則非redeclared，但可以使用，如果都找不到的話就是 Undeclared 。
+
+/* ----------------------------------------------------------------------------- */
