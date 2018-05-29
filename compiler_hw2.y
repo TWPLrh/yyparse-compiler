@@ -147,8 +147,8 @@ dcl	: VAR lockedID type '=' CALC	{ I_data = (int)$5; F_data = $5; create_symbol(
 ;
 
 comp	
-	: '{'	{ scopefunc('{'); }
-	| '}'	{ scopefunc('}'); }
+	: '{'	{ scopefunc('{');}
+	| '}'	{ scopefunc('}');}
 ;
 
 expr	
@@ -362,6 +362,7 @@ void scopefunc(char m)
 		如果在自己的Symbol Table找不到變數 -> 則尋找Mother.
 	*/
 	scope *mother;
+	scope *child;
 
 	if(m == '{') // 如果遇到左括號
 	{
@@ -386,8 +387,16 @@ void scopefunc(char m)
 
 	else if(m == '}') // 如果遇到右括號
 	{
+		child = Scope;
+		
 		Scope = Scope -> mother; // Scope 設為 mother
 		ScopeDepth --; // 深度 - 1
+
+		if(Scope -> mother == NULL)
+		{  
+			Scope = child;
+			yyerror("< } > used without < { >");
+		}
 		
 		if( l == 1 && r == 0 )
 		{
